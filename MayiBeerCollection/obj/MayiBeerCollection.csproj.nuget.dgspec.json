@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "F:\\GitHub\\Net\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection.csproj": {}
+    "F:\\GitHub\\Net\\MayiBeerCollection-Backend\\MayiBeerCollection\\MayiBeerCollection.csproj": {}
   },
   "projects": {
-    "F:\\GitHub\\Net\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection.csproj": {
+    "F:\\GitHub\\Net\\MayiBeerCollection-Backend\\MayiBeerCollection\\MayiBeerCollection.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\GitHub\\Net\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection.csproj",
+        "projectUniqueName": "F:\\GitHub\\Net\\MayiBeerCollection-Backend\\MayiBeerCollection\\MayiBeerCollection.csproj",
         "projectName": "MayiBeerCollection",
-        "projectPath": "F:\\GitHub\\Net\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection.csproj",
+        "projectPath": "F:\\GitHub\\Net\\MayiBeerCollection-Backend\\MayiBeerCollection\\MayiBeerCollection.csproj",
         "packagesPath": "C:\\Users\\maxim\\.nuget\\packages\\",
-        "outputPath": "F:\\GitHub\\Net\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection\\obj\\",
+        "outputPath": "F:\\GitHub\\Net\\MayiBeerCollection-Backend\\MayiBeerCollection\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

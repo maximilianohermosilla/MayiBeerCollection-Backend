@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+//ADD MAPERS
 builder.Services.AddAutoMapper(config =>
 {
     config.CreateMap<Cerveza, CervezaDTO>();
@@ -26,8 +26,12 @@ builder.Services.AddAutoMapper(config =>
     config.CreateMap<PaisDTO, Pai>();
 
 }, typeof(Program));
+
+//ADD CORS
+builder.Services.AddCors(options => options.AddPolicy("AllowWebApp",
+    builder => builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -42,7 +46,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
+//USE CORS
+app.UseCors("AllowWebApp");
 
 app.UseHttpsRedirection();
 

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "1AK2kLO83AJzyOQEj7tGllWLPmAO0ETmrSQB73jW2e+SnlBPMScoNlqoJOPpdPr9IXsvGcfraclC6EfqtaVU+w==",
+  "dgSpecHash": "Himm1jSiHxzpfE8IixdAqQt6bm3HY4SYXubAcQzkfns+Y/Do3BrijR2B1mlbeMYbz7DtrLfbY1o5xT4IZ5R3Pw==",
   "success": true,
-  "projectFilePath": "F:\\GitHub\\Net\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection\\MayiBeerCollection.csproj",
+  "projectFilePath": "F:\\GitHub\\Net\\MayiBeerCollection-Backend\\MayiBeerCollection\\MayiBeerCollection.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\maxim\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\maxim\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.0\\automapper.extensions.microsoft.dependencyinjection.12.0.0.nupkg.sha512",
