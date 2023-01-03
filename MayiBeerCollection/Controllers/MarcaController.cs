@@ -44,7 +44,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
-        public ActionResult nuevo([FromForm] MarcaDTO nuevaMarca)
+        public ActionResult nuevo(MarcaDTO nuevaMarca)
         {
             Marca _marca = _mapper.Map<Marca>(nuevaMarca);
 
@@ -57,7 +57,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
-        public ActionResult actualizar([FromForm] MarcaDTO actualizaMarca)
+        public ActionResult actualizar(MarcaDTO actualizaMarca)
         {
 
             Marca _marca = (from h in _contexto.Marcas where h.Id == actualizaMarca.Id select h).FirstOrDefault();

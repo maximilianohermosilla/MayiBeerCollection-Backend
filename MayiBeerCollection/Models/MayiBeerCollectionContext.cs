@@ -36,9 +36,6 @@ public partial class MayiBeerCollectionContext : DbContext
             entity.ToTable("Cerveza");
 
             entity.Property(e => e.Ibu).HasColumnName("IBU");
-            entity.Property(e => e.Imagen)
-                .HasMaxLength(500)
-                .IsUnicode(false);
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);

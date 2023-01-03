@@ -55,7 +55,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
-        public ActionResult nuevo([FromForm] PaisDTO nuevoPais)
+        public ActionResult nuevo(PaisDTO nuevoPais)
         {
             Pai _pais = _mapper.Map<Pai>(nuevoPais);
 
@@ -68,7 +68,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
-        public ActionResult actualizar([FromForm] PaisDTO actualizaPais)
+        public ActionResult actualizar(PaisDTO actualizaPais)
         {
 
             Pai _pais = (from h in _contexto.Pais where h.Id == actualizaPais.Id select h).FirstOrDefault();

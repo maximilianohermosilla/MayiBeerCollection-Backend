@@ -44,7 +44,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
-        public ActionResult nuevo([FromForm] EstiloDTO nuevo)
+        public ActionResult nuevo(EstiloDTO nuevo)
         {
             Estilo _estilo = _mapper.Map<Estilo>(nuevo);
 
@@ -57,7 +57,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
-        public ActionResult actualizar([FromForm] EstiloDTO actualiza)
+        public ActionResult actualizar(EstiloDTO actualiza)
         {
 
             Estilo _estilo = (from h in _contexto.Estilos where h.Id == actualiza.Id select h).FirstOrDefault();

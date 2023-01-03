@@ -65,7 +65,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
-        public ActionResult nuevo([FromForm] CiudadDTO nuevo)
+        public ActionResult nuevo(CiudadDTO nuevo)
         {
             Ciudad _ciudad = _mapper.Map<Ciudad>(nuevo);
 
@@ -78,7 +78,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
-        public ActionResult actualizar([FromForm] CiudadDTO actualiza)
+        public ActionResult actualizar(CiudadDTO actualiza)
         {
 
             Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == actualiza.Id select h).FirstOrDefault();

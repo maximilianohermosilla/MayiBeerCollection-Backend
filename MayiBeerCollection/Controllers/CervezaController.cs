@@ -97,7 +97,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
-        public ActionResult nuevo([FromForm] CervezaDTO nuevo)
+        public ActionResult nuevo(CervezaDTO nuevo)
         {
             Cerveza _cerveza = _mapper.Map<Cerveza>(nuevo);
 
@@ -110,7 +110,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
-        public ActionResult actualizar([FromForm] CervezaDTO actualiza)
+        public ActionResult actualizar(CervezaDTO actualiza)
         {
 
             Cerveza _cerveza = (from h in _contexto.Cervezas where h.Id == actualiza.Id select h).FirstOrDefault();
