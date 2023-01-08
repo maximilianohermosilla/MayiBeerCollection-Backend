@@ -15,6 +15,10 @@ public partial class MayiBeerCollectionContext : DbContext
     {
     }
 
+    public virtual DbSet<Archivo> Archivos { get; set; }
+
+    public virtual DbSet<ArchivoFilestream> ArchivoFilestreams { get; set; }
+
     public virtual DbSet<Cerveza> Cervezas { get; set; }
 
     public virtual DbSet<Ciudad> Ciudads { get; set; }
@@ -31,17 +35,47 @@ public partial class MayiBeerCollectionContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Archivo>(entity =>
+        {
+            entity.ToTable("Archivo");
+
+            entity.Property(e => e.Archivo1).HasColumnName("Archivo");
+        });
+
+        modelBuilder.Entity<ArchivoFilestream>(entity =>
+        {
+            entity.ToTable("ArchivoFilestream");
+
+            entity.HasIndex(e => e.Idguid, "UQ__ArchivoF__D1B7D08051915287").IsUnique();
+
+            entity.Property(e => e.FileAttribute)
+                .HasMaxLength(150)
+                .IsUnicode(false);
+            entity.Property(e => e.FileCreateDate).HasColumnType("datetime");
+            entity.Property(e => e.FileName).IsUnicode(false);
+            entity.Property(e => e.FileSize).HasColumnType("numeric(10, 5)");
+            entity.Property(e => e.Idguid).HasColumnName("IDGUID");
+            entity.Property(e => e.RootDirectory).IsUnicode(false);
+        });
+
         modelBuilder.Entity<Cerveza>(entity =>
         {
             entity.ToTable("Cerveza");
 
             entity.Property(e => e.Ibu).HasColumnName("IBU");
+            entity.Property(e => e.Imagen)
+                .IsUnicode(false)
+                .HasColumnName("imagen");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Observaciones)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Cervezas)
+                .HasForeignKey(d => d.IdArchivo)
+                .HasConstraintName("FK_Cerveza_Archivo");
 
             entity.HasOne(d => d.IdCiudadNavigation).WithMany(p => p.Cervezas)
                 .HasForeignKey(d => d.IdCiudad)

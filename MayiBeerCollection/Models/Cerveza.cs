@@ -23,7 +23,11 @@ public partial class Cerveza
 
     public int Contenido { get; set; }
 
-    public byte[]? Imagen { get; set; }
+    public string? Imagen { get; set; }
+
+    public int? IdArchivo { get; set; }
+
+    public virtual Archivo? IdArchivoNavigation { get; set; }
 
     public virtual Ciudad? IdCiudadNavigation { get; set; }
 
