@@ -75,7 +75,7 @@ namespace MayiBeerCollection.Controllers
             }
 
         }
-        [HttpGet("{CervezaId}")]
+        [HttpGet("buscar/{CervezaId}")]
         public ActionResult<Cerveza> Cervezas(int CervezaId)
         {
             try

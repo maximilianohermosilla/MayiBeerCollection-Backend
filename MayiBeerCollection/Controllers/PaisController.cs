@@ -43,7 +43,7 @@ namespace MayiBeerCollection.Controllers
 
             return _paises;
         }
-        [HttpGet("{PaisId}")]
+        [HttpGet("buscar/{PaisId}")]
         public ActionResult<Pai> Pais(int PaisId)
         {
             var cl = (from tbl in _contexto.Pais where tbl.Id == PaisId select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre }).FirstOrDefault();

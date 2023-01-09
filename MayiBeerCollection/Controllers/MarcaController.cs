@@ -32,7 +32,7 @@ namespace MayiBeerCollection.Controllers
 
             return lst;
         }
-        [HttpGet("{MarcaId}")]
+        [HttpGet("buscar/{MarcaId}")]
         public ActionResult<Marca> Marcas(int MarcaId)
         {
             Marca cl = (from tbl in _contexto.Marcas where tbl.Id == MarcaId select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre }).FirstOrDefault();

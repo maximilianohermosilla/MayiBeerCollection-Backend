@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MayiBeerCollection.DTO;
 using static System.Collections.Specialized.BitVector32;
+using System.Collections.Generic;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -44,7 +45,33 @@ namespace MayiBeerCollection.Controllers
 
             return Accepted(ciudadesDTO);
         }
-        [HttpGet("{CiudadId}")]
+
+        [HttpGet("buscarPais/{PaisId}")]
+        public ActionResult<IEnumerable<Ciudad>> CiudadesByPais(int PaisId)
+        {
+            Pai _pais = (from h in _contexto.Pais where h.Id == PaisId select h).FirstOrDefault();
+            List<Ciudad> lst = (from tbl in _contexto.Ciudads where tbl.IdPais == PaisId select tbl).ToList();
+            List<CiudadDTO> ciudadesDTO = _mapper.Map<List<CiudadDTO>>(lst);
+
+
+            if (lst == null || _pais == null)
+            {
+                return NotFound(PaisId);
+            }
+
+
+            foreach (var item in ciudadesDTO)
+            {                
+                if (_pais != null)
+                {
+                    item.PaisNombre = _pais.Nombre;
+                }
+            }
+
+            return Accepted(ciudadesDTO);
+        }
+
+        [HttpGet("buscar/{CiudadId}")]
         public ActionResult<Ciudad> Ciudades(int CiudadId)
         {
             Ciudad cl = (from tbl in _contexto.Ciudads where tbl.Id == CiudadId select tbl).FirstOrDefault();

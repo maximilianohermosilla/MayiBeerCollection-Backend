@@ -32,7 +32,7 @@ namespace MayiBeerCollection.Controllers
 
             return lst;
         }
-        [HttpGet("{EstiloId}")]
+        [HttpGet("buscar/{EstiloId}")]
         public ActionResult<Estilo> Estilos(int EstiloId)
         {
             Estilo cl = (from tbl in _contexto.Estilos where tbl.Id == EstiloId select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre }).FirstOrDefault();
