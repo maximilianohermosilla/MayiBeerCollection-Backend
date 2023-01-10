@@ -9,5 +9,9 @@ public partial class Pai
 
     public string Nombre { get; set; } = null!;
 
+    public int? IdArchivo { get; set; }
+
     public virtual ICollection<Ciudad> Ciudads { get; } = new List<Ciudad>();
+
+    public virtual Archivo? IdArchivoNavigation { get; set; }
 }

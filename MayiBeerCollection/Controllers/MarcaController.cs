@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Linq;
 using System.Threading.Tasks;
 using MayiBeerCollection.DTO;
+using System.Text;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -26,53 +27,120 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Marca>> Marcas()
+        public ActionResult<IEnumerable<MarcaDTO>> Marcas()
         {
-            var lst = (from tbl in _contexto.Marcas where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre }).ToList();
+            var lst = (from tbl in _contexto.Marcas where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
 
-            return lst;
+            List<MarcaDTO> marcasDTO = _mapper.Map<List<MarcaDTO>>(lst);
+
+            foreach (var item in marcasDTO)
+            {
+                Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+                if (_archivo != null)
+                {
+                    string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
+                    item.Imagen = stringArchivo;
+                }
+            }
+
+            return Accepted(marcasDTO);
         }
         [HttpGet("buscar/{MarcaId}")]
-        public ActionResult<Marca> Marcas(int MarcaId)
+        public ActionResult<MarcaDTO> Marcas(int MarcaId)
         {
-            Marca cl = (from tbl in _contexto.Marcas where tbl.Id == MarcaId select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre }).FirstOrDefault();
+            Marca cl = (from tbl in _contexto.Marcas where tbl.Id == MarcaId select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).FirstOrDefault();
             if (cl == null)
             {
                 return NotFound(MarcaId);
             }
-            return _mapper.Map<Marca>(cl);
+
+            MarcaDTO item = _mapper.Map<MarcaDTO>(cl);
+
+            Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+
+            if (_archivo != null)
+            {
+                string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
+                item.Imagen = stringArchivo;
+            }
+
+            return Accepted(item);
         }
 
         [HttpPost("nuevo")]
-        public ActionResult nuevo(MarcaDTO nuevaMarca)
+        public ActionResult nuevo(MarcaDTO nuevo)
         {
-            Marca _marca = _mapper.Map<Marca>(nuevaMarca);
+            try
+            {
+                Marca _marca = _mapper.Map<Marca>(nuevo);
 
-            _contexto.Marcas.Add(_marca);
-            _contexto.SaveChanges();
+                if (nuevo.Imagen != null)
+                {
+                    byte[] bytes = Encoding.ASCII.GetBytes(nuevo.Imagen);
+                    Archivo newArch = new Archivo() { Archivo1 = bytes };
+                    _contexto.Archivos.Add(newArch);
+                    _contexto.SaveChanges();
+                    _marca.IdArchivo = newArch.Id;
+                }
 
-            nuevaMarca.Id = _marca.Id;
+                _contexto.Marcas.Add(_marca);
+                _contexto.SaveChanges();
 
-            return Accepted(nuevaMarca);
+                nuevo.Id = _marca.Id;
+
+                return Accepted(_marca);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }     
         }
 
         [HttpPut("actualizar")]
-        public ActionResult actualizar(MarcaDTO actualizaMarca)
+        public ActionResult actualizar(MarcaDTO actualiza)
         {
-
-            Marca _marca = (from h in _contexto.Marcas where h.Id == actualizaMarca.Id select h).FirstOrDefault();
-
-            if (_marca == null)
+            try
             {
-                return NotFound(actualizaMarca);
+                Marca _marca = (from h in _contexto.Marcas where h.Id == actualiza.Id select h).FirstOrDefault();
+
+                if (_marca == null)
+                {
+                    return NotFound(actualiza);
+                }
+                _marca.Nombre = actualiza.Nombre;
+
+                if (actualiza.Imagen != null)
+                {
+                    byte[] bytes = Encoding.ASCII.GetBytes(actualiza.Imagen);
+                    Archivo arch = (from a in _contexto.Archivos where a.Id == _marca.IdArchivo select a).FirstOrDefault();
+
+                    if (arch == null)
+                    {
+                        Archivo newArch = new Archivo() { Archivo1 = bytes };
+                        _contexto.Archivos.Add(newArch);
+                        _contexto.SaveChanges();
+                        _marca.IdArchivo = newArch.Id;
+                    }
+                    else
+                    {
+                        arch.Archivo1 = bytes;
+                        _contexto.Archivos.Update(arch);
+                        _contexto.SaveChanges();
+                    }
+                }
+
+                _contexto.Marcas.Update(_marca);
+                _contexto.SaveChanges();
+
+                return Accepted(actualiza);
             }
-            _marca.Nombre = actualizaMarca.Nombre;
-
-            _contexto.Marcas.Update(_marca);
-            _contexto.SaveChanges();
-
-            return Accepted(actualizaMarca);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
         [HttpDelete("eliminar/{MarcaId}")]
         public ActionResult eliminar(int MarcaId)
         {
@@ -81,6 +149,14 @@ namespace MayiBeerCollection.Controllers
             if (_marca == null)
             {
                 return NotFound(MarcaId);
+            }
+
+            Archivo arch = (from a in _contexto.Archivos where a.Id == _marca.IdArchivo select a).FirstOrDefault();
+
+            if (arch == null)
+            {
+                _contexto.Archivos.Remove(arch);
+                _contexto.SaveChanges();
             }
 
             _contexto.Marcas.Remove(_marca);

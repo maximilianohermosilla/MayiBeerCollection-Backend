@@ -219,6 +219,14 @@ namespace MayiBeerCollection.Controllers
                     return NotFound(CervezaId);
                 }
 
+                Archivo arch = (from a in _contexto.Archivos where a.Id == _cerveza.IdArchivo select a).FirstOrDefault();
+
+                if (arch == null)
+                {
+                    _contexto.Archivos.Remove(arch);
+                    _contexto.SaveChanges();
+                }
+
                 _contexto.Cervezas.Remove(_cerveza);
                 _contexto.SaveChanges();
 

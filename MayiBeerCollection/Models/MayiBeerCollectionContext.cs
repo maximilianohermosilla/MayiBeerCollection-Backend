@@ -113,6 +113,10 @@ public partial class MayiBeerCollectionContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Estilos)
+                .HasForeignKey(d => d.IdArchivo)
+                .HasConstraintName("FK_Estilo_Archivo");
         });
 
         modelBuilder.Entity<Marca>(entity =>
@@ -122,6 +126,10 @@ public partial class MayiBeerCollectionContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Marcas)
+                .HasForeignKey(d => d.IdArchivo)
+                .HasConstraintName("FK_Marca_Archivo");
         });
 
         modelBuilder.Entity<Pai>(entity =>
@@ -129,6 +137,10 @@ public partial class MayiBeerCollectionContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Pais)
+                .HasForeignKey(d => d.IdArchivo)
+                .HasConstraintName("FK_Pais_Archivo");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -6,6 +6,8 @@ using System.Numerics;
 using System.Linq;
 using System.Threading.Tasks;
 using MayiBeerCollection.DTO;
+using System.Text;
+using System.Collections.Generic;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -28,7 +30,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet(Name = "Pais")]
         public ActionResult<IEnumerable<PaisDTO>> Pais()
         {
-            List<Pai> lst = (from tbl in _contexto.Pais where tbl.Id > 0 select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre }).ToList();
+            List<Pai> lst = (from tbl in _contexto.Pais where tbl.Id > 0 select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
 
             List<PaisDTO> _paises = _mapper.Map<List<PaisDTO>>(lst);
 
@@ -39,51 +41,113 @@ namespace MayiBeerCollection.Controllers
                 {
                     item.ciudades = _ciudades;
                 }
+
+                Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+                if (_archivo != null)
+                {
+                    string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
+                    item.Imagen = stringArchivo;
+                }
             }
 
             return _paises;
         }
         [HttpGet("buscar/{PaisId}")]
-        public ActionResult<Pai> Pais(int PaisId)
+        public ActionResult<PaisDTO> Pais(int PaisId)
         {
-            var cl = (from tbl in _contexto.Pais where tbl.Id == PaisId select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre }).FirstOrDefault();
+
+            var cl = (from tbl in _contexto.Pais where tbl.Id == PaisId select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).FirstOrDefault();
             if (cl == null)
             {
                 return NotFound(PaisId);
             }
-            return _mapper.Map<Pai>(cl);
+
+            PaisDTO item = _mapper.Map<PaisDTO>(cl);
+
+            Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+
+            if (_archivo != null)
+            {
+                string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
+                item.Imagen = stringArchivo;
+            }
+
+            return Accepted(item);
         }
 
         [HttpPost("nuevo")]
         public ActionResult nuevo(PaisDTO nuevoPais)
         {
-            Pai _pais = _mapper.Map<Pai>(nuevoPais);
+            try
+            {
+                Pai _pais = _mapper.Map<Pai>(nuevoPais);
 
-            _contexto.Pais.Add(_pais);
-            _contexto.SaveChanges();
+                if (nuevoPais.Imagen != null)
+                {
+                    byte[] bytes = Encoding.ASCII.GetBytes(nuevoPais.Imagen);
+                    Archivo newArch = new Archivo() { Archivo1 = bytes };
+                    _contexto.Archivos.Add(newArch);
+                    _contexto.SaveChanges();
+                    _pais.IdArchivo = newArch.Id;
+                }
 
-            nuevoPais.Id = _pais.Id;
+                _contexto.Pais.Add(_pais);
+                _contexto.SaveChanges();
 
-            return Accepted(nuevoPais);
+                nuevoPais.Id = _pais.Id;
+
+                return Accepted(_pais);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }   
         }
 
         [HttpPut("actualizar")]
-        public ActionResult actualizar(PaisDTO actualizaPais)
+        public ActionResult actualizar(PaisDTO actualiza)
         {
-
-            Pai _pais = (from h in _contexto.Pais where h.Id == actualizaPais.Id select h).FirstOrDefault();
-
-            if (_pais == null)
+            try
             {
-                return NotFound(actualizaPais);
+                Pai _pais = (from h in _contexto.Pais where h.Id == actualiza.Id select h).FirstOrDefault();
+
+                if (_pais == null)
+                {
+                    return NotFound(actualiza);
+                }
+                _pais.Nombre = actualiza.Nombre;
+
+                if (actualiza.Imagen != null)
+                {
+                    byte[] bytes = Encoding.ASCII.GetBytes(actualiza.Imagen);
+                    Archivo arch = (from a in _contexto.Archivos where a.Id == _pais.IdArchivo select a).FirstOrDefault();
+
+                    if (arch == null)
+                    {
+                        Archivo newArch = new Archivo() { Archivo1 = bytes };
+                        _contexto.Archivos.Add(newArch);
+                        _contexto.SaveChanges();
+                        _pais.IdArchivo = newArch.Id;
+                    }
+                    else
+                    {
+                        arch.Archivo1 = bytes;
+                        _contexto.Archivos.Update(arch);
+                        _contexto.SaveChanges();
+                    }
+                }
+
+                _contexto.Pais.Update(_pais);
+                _contexto.SaveChanges();
+
+                return Accepted(actualiza);
             }
-            _pais.Nombre = actualizaPais.Nombre;
-
-            _contexto.Pais.Update(_pais);
-            _contexto.SaveChanges();
-
-            return Accepted(actualizaPais);
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
         [HttpDelete("eliminar/{PaisId}")]
         public ActionResult eliminar(int PaisId)
         {
@@ -92,6 +156,14 @@ namespace MayiBeerCollection.Controllers
             if (_pais == null)
             {
                 return NotFound(PaisId);
+            }
+
+            Archivo arch = (from a in _contexto.Archivos where a.Id == _pais.IdArchivo select a).FirstOrDefault();
+
+            if (arch == null)
+            {
+                _contexto.Archivos.Remove(arch);
+                _contexto.SaveChanges();
             }
 
             _contexto.Pais.Remove(_pais);
