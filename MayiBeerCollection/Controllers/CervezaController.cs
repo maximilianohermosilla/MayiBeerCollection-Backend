@@ -9,6 +9,7 @@ using MayiBeerCollection.DTO;
 using static System.Collections.Specialized.BitVector32;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text;
+using System.Collections.Generic;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -33,7 +34,7 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                List<Cerveza> lst = (from tbl in _contexto.Cervezas where tbl.Id > 0 select tbl).ToList();
+                List<Cerveza> lst = (from tbl in _contexto.Cervezas where tbl.Id > 0 select tbl).ToList();          
 
                 List<CervezaDTO> cervezasDTO = _mapper.Map<List<CervezaDTO>>(lst);
 
@@ -75,6 +76,7 @@ namespace MayiBeerCollection.Controllers
             }
 
         }
+
         [HttpGet("buscar/{CervezaId}")]
         public ActionResult<Cerveza> Cervezas(int CervezaId)
         {
@@ -119,6 +121,64 @@ namespace MayiBeerCollection.Controllers
                 }
 
                 return Accepted(item);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("busquedaFiltros")]
+        public ActionResult<Cerveza> CervezasByFilter(BusquedaDTO busqueda)
+        {
+            try
+            {
+                List<Cerveza> lst = (from tbl in _contexto.Cervezas where
+                              (tbl.IdMarca == busqueda.IdMarca || busqueda.IdMarca == 0) &&
+                              (tbl.IdEstilo == busqueda.IdEstilo || busqueda.IdEstilo == 0) &&
+                              (tbl.IdCiudad == busqueda.IdCiudad || (busqueda.IdCiudad == 0 && busqueda.IdPais == 0) || 
+                              (busqueda.IdCiudad == 0 && busqueda.IdPais > 0 && (from tblCiudad in _contexto.Ciudads where tblCiudad.IdPais == busqueda.IdPais select tblCiudad.Id).Contains((int)tbl.IdCiudad))
+                              ) 
+                select tbl).ToList();
+
+                if (lst == null)
+                {
+                    return NotFound(busqueda);
+                }
+
+                List<CervezaDTO> cervezasDTO = _mapper.Map<List<CervezaDTO>>(lst);
+
+                foreach (var item in cervezasDTO)
+                {
+                    Estilo _estilo = (from h in _contexto.Estilos where h.Id == item.IdEstilo select h).FirstOrDefault();
+                    if (_estilo != null)
+                    {
+                        item.NombreEstilo = _estilo.Nombre;
+                    }
+
+                    Marca _marca = (from h in _contexto.Marcas where h.Id == item.IdMarca select h).FirstOrDefault();
+                    if (_marca != null)
+                    {
+                        item.NombreMarca = _marca.Nombre;
+                    }
+
+                    Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+                    if (_archivo != null)
+                    {
+                        string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
+                        item.Imagen = stringArchivo;
+                    }
+
+                    Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == item.IdCiudad select h).FirstOrDefault();
+                    if (_ciudad != null)
+                    {
+                        Pai _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
+                        item.IdPais = _pais.Id;
+                        item.NombrePais = _pais.Nombre;
+                        item.NombreCiudad = _ciudad.Nombre + " (" + _pais.Nombre + ")";
+                    }
+                }
+                return Accepted(cervezasDTO);
             }
             catch (Exception ex)
             {
