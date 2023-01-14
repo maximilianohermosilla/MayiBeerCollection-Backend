@@ -23,6 +23,7 @@ mono_crash.*
 [Rr]eleases/
 x64/
 x86/
+net6.0/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
@@ -92,6 +93,7 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.sentinel
 
 # Chutzpah Test files
 _Chutzpah*
