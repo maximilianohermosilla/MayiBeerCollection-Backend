@@ -151,9 +151,15 @@ namespace MayiBeerCollection.Controllers
                 return NotFound(MarcaId);
             }
 
+            List<Cerveza> _cervezas = (from tbl in _contexto.Cervezas where tbl.IdMarca == MarcaId select tbl).ToList();
+            if (_cervezas.Count() > 0)
+            {
+                return BadRequest("No se puede eliminar la marca porque tiene una o más cervezas asociadas");
+            }
+
             Archivo arch = (from a in _contexto.Archivos where a.Id == _marca.IdArchivo select a).FirstOrDefault();
 
-            if (arch == null)
+            if (arch != null)
             {
                 _contexto.Archivos.Remove(arch);
                 _contexto.SaveChanges();

@@ -155,12 +155,18 @@ namespace MayiBeerCollection.Controllers
 
             if (_pais == null)
             {
-                return NotFound(PaisId);
+                return NotFound("No se encontró el elemento" + PaisId);
+            }
+
+            List<Ciudad> _ciudades = (from tbl in _contexto.Ciudads where tbl.IdPais == PaisId select tbl).ToList();
+            if (_ciudades.Count() > 0)
+            {
+                return BadRequest("No se puede eliminar el país porque tiene una o más ciudades asociadas");
             }
 
             Archivo arch = (from a in _contexto.Archivos where a.Id == _pais.IdArchivo select a).FirstOrDefault();
 
-            if (arch == null)
+            if (arch != null)
             {
                 _contexto.Archivos.Remove(arch);
                 _contexto.SaveChanges();

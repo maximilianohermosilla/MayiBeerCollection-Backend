@@ -133,6 +133,12 @@ namespace MayiBeerCollection.Controllers
                 return NotFound(CiudadId);
             }
 
+            List<Cerveza> _cervezas = (from tbl in _contexto.Cervezas where tbl.IdCiudad == CiudadId select tbl).ToList();
+            if (_cervezas.Count() > 0)
+            {
+                return BadRequest("No se puede eliminar la ciudad porque tiene una o más cervezas asociadas");
+            }
+
             _contexto.Ciudads.Remove(_ciudad);
             _contexto.SaveChanges();
 
