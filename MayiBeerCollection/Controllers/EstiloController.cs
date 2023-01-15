@@ -156,6 +156,12 @@ namespace MayiBeerCollection.Controllers
 
             Archivo arch = (from a in _contexto.Archivos where a.Id == _estilo.IdArchivo select a).FirstOrDefault();
 
+            List<Cerveza> _cervezas = (from tbl in _contexto.Cervezas where tbl.IdEstilo == EstiloId select tbl).ToList();
+            if (_cervezas.Count() > 0)
+            {
+                return BadRequest("No se puede eliminar el estilo porque tiene una o más cervezas asociadas");
+            }
+
             if (arch != null)
             {
                 _contexto.Archivos.Remove(arch);
