@@ -166,3 +166,4 @@ F:\GitHub\Net\MayiBeerCollection-Backend\MayiBeerCollection\obj\Debug\net6.0\ref
 F:\GitHub\Net\MayiBeerCollection-Backend\MayiBeerCollection\obj\Debug\net6.0\MayiBeerCollection.pdb
 F:\GitHub\Net\MayiBeerCollection-Backend\MayiBeerCollection\obj\Debug\net6.0\MayiBeerCollection.genruntimeconfig.cache
 F:\GitHub\Net\MayiBeerCollection-Backend\MayiBeerCollection\obj\Debug\net6.0\ref\MayiBeerCollection.dll
+F:\GitHub\Net\MayiBeerCollection-Backend\MayiBeerCollection\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

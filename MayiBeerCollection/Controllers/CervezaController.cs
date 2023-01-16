@@ -10,11 +10,12 @@ using static System.Collections.Specialized.BitVector32;
 using static System.Net.Mime.MediaTypeNames;
 using System.Text;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
 {
-    [Route("[controller]")]
+    [Route("[controller]")]    
     [ApiController]
     public class CervezaController : ControllerBase
     {

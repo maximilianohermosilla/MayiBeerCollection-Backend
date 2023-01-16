@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using MayiBeerCollection.DTO;
 using System.Text;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -76,6 +77,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
+        [Authorize]
         public ActionResult nuevo(PaisDTO nuevoPais)
         {
             try
