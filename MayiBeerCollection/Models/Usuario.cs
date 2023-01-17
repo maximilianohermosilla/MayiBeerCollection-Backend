@@ -14,4 +14,10 @@ public partial class Usuario
     public string Password { get; set; } = null!;
 
     public string? Correo { get; set; }
+
+    public bool? Habilitado { get; set; }
+
+    public int? IdPerfil { get; set; }
+
+    public virtual Perfil? IdPerfilNavigation { get; set; }
 }

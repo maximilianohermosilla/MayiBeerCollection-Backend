@@ -29,6 +29,8 @@ public partial class MayiBeerCollectionContext : DbContext
 
     public virtual DbSet<Pai> Pais { get; set; }
 
+    public virtual DbSet<Perfil> Perfils { get; set; }
+
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -145,6 +147,15 @@ public partial class MayiBeerCollectionContext : DbContext
                 .HasConstraintName("FK_Pais_Archivo");
         });
 
+        modelBuilder.Entity<Perfil>(entity =>
+        {
+            entity.ToTable("Perfil");
+
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<Usuario>(entity =>
         {
             entity.ToTable("Usuario");
@@ -161,6 +172,10 @@ public partial class MayiBeerCollectionContext : DbContext
             entity.Property(e => e.Password)
                 .HasMaxLength(150)
                 .IsUnicode(false);
+
+            entity.HasOne(d => d.IdPerfilNavigation).WithMany(p => p.Usuarios)
+                .HasForeignKey(d => d.IdPerfil)
+                .HasConstraintName("FK_Usuario_Perfil");
         });
 
         OnModelCreatingPartial(modelBuilder);

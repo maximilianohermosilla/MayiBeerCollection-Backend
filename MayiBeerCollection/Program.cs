@@ -28,6 +28,9 @@ builder.Services.AddAutoMapper(config =>
     config.CreateMap<Pai, PaisDTO>();
     config.CreateMap<PaisDTO, Pai>();
 
+    config.CreateMap<Usuario, UsuarioDTO>();
+    config.CreateMap<UsuarioDTO, Usuario>();
+
 }, typeof(Program));
 
 //ADD CORS
@@ -49,10 +52,11 @@ builder.Services.AddAuthentication(config =>
     config.SaveToken = true;
     config.TokenValidationParameters = new TokenValidationParameters
     {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
-        ValidateIssuer = false,
-        ValidateAudience = false
     };
 });
 //

@@ -28,7 +28,7 @@ namespace MayiBeerCollection.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet(Name = "Pais")]
+        [HttpGet(Name = "Pais")]        
         public ActionResult<IEnumerable<PaisDTO>> Pais()
         {
             List<Pai> lst = (from tbl in _contexto.Pais where tbl.Id > 0 select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
@@ -77,7 +77,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
-        [Authorize]
+        [Authorize(Roles = "Administrador")]
         public ActionResult nuevo(PaisDTO nuevoPais)
         {
             try
@@ -107,6 +107,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(PaisDTO actualiza)
         {
             try
@@ -151,6 +152,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpDelete("eliminar/{PaisId}")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int PaisId)
         {
             Pai _pais = (from h in _contexto.Pais where h.Id == PaisId select h).FirstOrDefault();

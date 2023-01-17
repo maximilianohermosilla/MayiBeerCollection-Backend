@@ -30,11 +30,13 @@ namespace MayiBeerCollection.Controllers
         [Route("login")]
         public IActionResult Login([FromBody] UsuarioLoginDTO request)
         {
-            if(Authenticate(request))
+            UsuarioDTO userDTO = Authenticate(request);
+            if (userDTO != null)
             {
                 var keyBytes = Encoding.ASCII.GetBytes(secretKey);
                 var claims = new ClaimsIdentity();
                 claims.AddClaim(new Claim(ClaimTypes.NameIdentifier, request.Login));
+                claims.AddClaim(new Claim(ClaimTypes.Role, userDTO.Perfil));
 
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -52,22 +54,28 @@ namespace MayiBeerCollection.Controllers
             }
             else
             {
-                return StatusCode(StatusCodes.Status401Unauthorized, new { token = "" });
+                return StatusCode(StatusCodes.Status401Unauthorized, new { token = "", error = "Usuario o contraseña incorrectos" });
             }
 
         }
 
-        private bool Authenticate(UsuarioLoginDTO userLogin)
+        private UsuarioDTO Authenticate(UsuarioLoginDTO userLogin)
         {
             var _user = (from tbl in _contexto.Usuarios where tbl.Login == userLogin.Login && tbl.Password == userLogin.Password select tbl).FirstOrDefault();
+
+            UsuarioDTO _userDTO = _mapper.Map<UsuarioDTO>(_user);
+
             if (_user != null)
             {
-                return true;
+                var _perfil = (from tbl in _contexto.Perfils where tbl.Id == _user.IdPerfil select tbl).FirstOrDefault();
+
+                if (_perfil != null)
+                {
+                    _userDTO.Perfil = _perfil.Descripcion;
+                }
             }
-            else 
-            { 
-                return false; 
-            }  
+
+            return _userDTO;             
         }
 
     }
