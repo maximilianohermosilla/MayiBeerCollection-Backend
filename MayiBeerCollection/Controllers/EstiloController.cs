@@ -28,7 +28,7 @@ namespace MayiBeerCollection.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("listar/")]
         public ActionResult<IEnumerable<EstiloDTO>> Estilos()
         {
             var lst = (from tbl in _contexto.Estilos where tbl.Id > 0 select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
@@ -44,6 +44,16 @@ namespace MayiBeerCollection.Controllers
                     item.Imagen = stringArchivo;
                 }
             }
+
+            return Accepted(estilosDTO);
+        }
+
+        [HttpGet("listarProxy/")]
+        public ActionResult<IEnumerable<EstiloDTO>> EstilosProxy()
+        {
+            var lst = (from tbl in _contexto.Estilos where tbl.Id > 0 select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
+
+            List<EstiloDTO> estilosDTO = _mapper.Map<List<EstiloDTO>>(lst);
 
             return Accepted(estilosDTO);
         }

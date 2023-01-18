@@ -28,7 +28,7 @@ namespace MayiBeerCollection.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("listar/")]
         public ActionResult<IEnumerable<MarcaDTO>> Marcas()
         {
             var lst = (from tbl in _contexto.Marcas where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
@@ -47,6 +47,17 @@ namespace MayiBeerCollection.Controllers
 
             return Accepted(marcasDTO);
         }
+
+        [HttpGet("listarProxy/")]
+        public ActionResult<IEnumerable<MarcaDTO>> MarcasProxy()
+        {
+            var lst = (from tbl in _contexto.Marcas where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
+
+            List<MarcaDTO> marcasDTO = _mapper.Map<List<MarcaDTO>>(lst);
+
+            return Accepted(marcasDTO);
+        }
+
         [HttpGet("buscar/{MarcaId}")]
         public ActionResult<MarcaDTO> Marcas(int MarcaId)
         {

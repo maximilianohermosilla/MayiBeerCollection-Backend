@@ -28,7 +28,7 @@ namespace MayiBeerCollection.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet(Name = "Pais")]        
+        [HttpGet("listar/")]        
         public ActionResult<IEnumerable<PaisDTO>> Pais()
         {
             List<Pai> lst = (from tbl in _contexto.Pais where tbl.Id > 0 select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
@@ -53,6 +53,26 @@ namespace MayiBeerCollection.Controllers
 
             return _paises;
         }
+
+        [HttpGet("listarProxy/")]
+        public ActionResult<IEnumerable<PaisDTO>> PaisesProxy()
+        {
+            List<Pai> lst = (from tbl in _contexto.Pais where tbl.Id > 0 select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
+
+            List<PaisDTO> _paises = _mapper.Map<List<PaisDTO>>(lst);
+
+            foreach (var item in _paises)
+            {
+                List<Ciudad> _ciudades = (from tbl in _contexto.Ciudads where tbl.IdPais == item.Id select tbl).ToList();
+                if (_ciudades != null)
+                {
+                    item.ciudades = _ciudades;
+                }
+            }
+
+            return _paises;
+        }
+
         [HttpGet("buscar/{PaisId}")]
         public ActionResult<PaisDTO> Pais(int PaisId)
         {

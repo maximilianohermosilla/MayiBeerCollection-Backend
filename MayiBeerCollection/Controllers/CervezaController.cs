@@ -30,7 +30,7 @@ namespace MayiBeerCollection.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("listar/")]
         public ActionResult<IEnumerable<Cerveza>> Cervezas()
         {
             try
@@ -74,6 +74,47 @@ namespace MayiBeerCollection.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);                
+            }
+
+        }
+
+        [HttpGet("listarProxy/")]
+        public ActionResult<IEnumerable<Cerveza>> CervezasProxy()
+        {
+            try
+            {
+                List<Cerveza> lst = (from tbl in _contexto.Cervezas where tbl.Id > 0 select tbl).ToList();
+
+                List<CervezaDTO> cervezasDTO = _mapper.Map<List<CervezaDTO>>(lst);
+
+                foreach (var item in cervezasDTO)
+                {
+                    Estilo _estilo = (from h in _contexto.Estilos where h.Id == item.IdEstilo select h).FirstOrDefault();
+                    if (_estilo != null)
+                    {
+                        item.NombreEstilo = _estilo.Nombre;
+                    }
+
+                    Marca _marca = (from h in _contexto.Marcas where h.Id == item.IdMarca select h).FirstOrDefault();
+                    if (_marca != null)
+                    {
+                        item.NombreMarca = _marca.Nombre;
+                    }
+
+                    Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == item.IdCiudad select h).FirstOrDefault();
+                    if (_ciudad != null)
+                    {
+                        Pai _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
+                        item.IdPais = _pais.Id;
+                        item.NombrePais = _pais.Nombre;
+                        item.NombreCiudad = _ciudad.Nombre + " (" + _pais.Nombre + ")";
+                    }
+                }
+                return Accepted(cervezasDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
 
         }

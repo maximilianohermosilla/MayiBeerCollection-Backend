@@ -79,10 +79,12 @@ if (app.Environment.IsDevelopment())
 }
 
 //USE CORS
-app.UseCors(policy => policy.AllowAnyHeader()
-                            .AllowAnyMethod()
-                            .SetIsOriginAllowed(origin => true)
-                            .AllowCredentials());
+//app.UseCors(policy => policy.AllowAnyHeader()
+//                            .AllowAnyMethod()
+//                            .SetIsOriginAllowed(origin => true)
+//                            .AllowCredentials());
+
+app.UseCors("AllowWebApp");
 
 app.UseHttpsRedirection();
 
