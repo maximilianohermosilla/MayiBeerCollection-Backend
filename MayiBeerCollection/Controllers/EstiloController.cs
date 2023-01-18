@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using MayiBeerCollection.DTO;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -69,6 +71,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult nuevo(EstiloDTO nuevo)
         {
             try
@@ -89,7 +92,7 @@ namespace MayiBeerCollection.Controllers
 
                 nuevo.Id = _estilo.Id;
 
-                return Accepted(_estilo);
+                return Accepted(nuevo);
 
             }
             catch (Exception ex)
@@ -99,6 +102,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(EstiloDTO actualiza)
         {
             try
@@ -140,11 +144,12 @@ namespace MayiBeerCollection.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }                
+            }
         }
 
 
         [HttpDelete("eliminar/{EstiloId}")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int EstiloId)
         {
             Estilo _estilo = (from h in _contexto.Estilos where h.Id == EstiloId select h).FirstOrDefault();

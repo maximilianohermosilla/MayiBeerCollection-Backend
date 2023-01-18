@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using MayiBeerCollection.DTO;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -68,6 +70,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult nuevo(MarcaDTO nuevo)
         {
             try
@@ -88,7 +91,7 @@ namespace MayiBeerCollection.Controllers
 
                 nuevo.Id = _marca.Id;
 
-                return Accepted(_marca);
+                return Accepted(nuevo);
 
             }
             catch (Exception ex)
@@ -98,6 +101,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(MarcaDTO actualiza)
         {
             try
@@ -142,6 +146,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpDelete("eliminar/{MarcaId}")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int MarcaId)
         {
             Marca _marca = (from h in _contexto.Marcas where h.Id == MarcaId select h).FirstOrDefault();

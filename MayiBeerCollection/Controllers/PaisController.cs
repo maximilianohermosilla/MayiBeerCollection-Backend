@@ -98,7 +98,7 @@ namespace MayiBeerCollection.Controllers
 
                 nuevoPais.Id = _pais.Id;
 
-                return Accepted(_pais);
+                return Accepted(nuevoPais);
             }
             catch (Exception ex)
             {

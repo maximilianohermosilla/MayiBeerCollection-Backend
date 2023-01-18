@@ -188,6 +188,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult nuevo(CervezaDTO nuevo)
         {
             try
@@ -219,6 +220,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(CervezaDTO actualiza)
         {
             try
@@ -270,6 +272,7 @@ namespace MayiBeerCollection.Controllers
             }
         }
         [HttpDelete("eliminar/{CervezaId}")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int CervezaId)
         {
             try

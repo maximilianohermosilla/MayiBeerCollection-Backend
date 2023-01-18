@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
+using MayiBeerCollection.Helpers;
 
 namespace MayiBeerCollection.Controllers
 {
@@ -30,6 +31,9 @@ namespace MayiBeerCollection.Controllers
         [Route("login")]
         public IActionResult Login([FromBody] UsuarioLoginDTO request)
         {
+            var passEncoded = CryptographyHelper.Encrypt(request.Password);
+            request.Password = passEncoded;
+            //var passDecoded = CryptographyHelper.Decrypt(passEncoded);
             UsuarioDTO userDTO = Authenticate(request);
             if (userDTO != null)
             {

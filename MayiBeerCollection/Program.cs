@@ -57,6 +57,7 @@ builder.Services.AddAuthentication(config =>
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+        ClockSkew = TimeSpan.FromMinutes(3600)
     };
 });
 //
@@ -66,7 +67,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddDbContext<MayiBeerCollectionContext>(x => x.UseSqlServer("Server=localhost; Database=MayiBeerCollection; Trusted_Connection=True; TrustServerCertificate=True"));
+builder.Services.AddDbContext<MayiBeerCollectionContext>(x => x.UseSqlServer("Data Source=SQL5097.site4now.net;Initial Catalog=db_a934ba_mayibeercollection;User Id=db_a934ba_mayibeercollection_admin;Password=Caslacapo1908**"));
 
 var app = builder.Build();
 
@@ -78,7 +79,10 @@ if (app.Environment.IsDevelopment())
 }
 
 //USE CORS
-app.UseCors("AllowWebApp");
+app.UseCors(policy => policy.AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .SetIsOriginAllowed(origin => true)
+                            .AllowCredentials());
 
 app.UseHttpsRedirection();
 

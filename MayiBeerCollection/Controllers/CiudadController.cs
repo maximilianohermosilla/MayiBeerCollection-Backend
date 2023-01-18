@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using MayiBeerCollection.DTO;
 using static System.Collections.Specialized.BitVector32;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -92,6 +94,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPost("nuevo")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult nuevo(CiudadDTO nuevo)
         {
             Ciudad _ciudad = _mapper.Map<Ciudad>(nuevo);
@@ -105,6 +108,7 @@ namespace MayiBeerCollection.Controllers
         }
 
         [HttpPut("actualizar")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(CiudadDTO actualiza)
         {
 
@@ -124,6 +128,7 @@ namespace MayiBeerCollection.Controllers
             return Accepted(actualiza);
         }
         [HttpDelete("eliminar/{CiudadId}")]
+        [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int CiudadId)
         {
             Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == CiudadId select h).FirstOrDefault();
