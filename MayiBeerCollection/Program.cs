@@ -74,20 +74,6 @@ builder.Services.AddDbContext<MayiBeerCollectionContext>(x => x.UseSqlServer("Da
 //SERILOG
 builder.Host.UseSerilog();
 
-/*Log.Logger = new LoggerConfiguration().WriteTo.MSSqlServer(
-    connectionString: "Server=localhost; Database=MayiBeerCollection; Trusted_Connection=True; TrustServerCertificate=True",
-    tableName: "Logs",
-    autoCreateSqlTable: true
-    ).CreateLogger();*/
-
-
-/*var logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .CreateLogger();
-builder.Logging.ClearProviders();
-builder.Logging.AddSerilog(logger);*/
-
 Log.Logger = new LoggerConfiguration().CreateBootstrapLogger();
 builder.Host.UseSerilog(((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration)));
 

@@ -22,12 +22,14 @@ namespace MayiBeerCollection.Controllers
         private MayiBeerCollectionContext _contexto;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly ILogger<CervezaController> _logger;
 
-        public CervezaController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper)
+        public CervezaController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper, ILogger<CervezaController> logger)
         {
             _contexto = context;
             _configuration = configuration;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("listar/")]
@@ -162,6 +164,7 @@ namespace MayiBeerCollection.Controllers
                     item.NombreCiudad = _ciudad.Nombre + " (" + _pais.Nombre + ")";
                 }
 
+                _logger.LogWarning("Búsqueda de Cerveza Id: " + CervezaId + ". Resultados: " + item.Nombre);
                 return Accepted(item);
             }
             catch (Exception ex)
@@ -251,12 +254,14 @@ namespace MayiBeerCollection.Controllers
 
                 nuevo.Id = _cerveza.Id;
 
+                _logger.LogWarning("Se insertó una nueva cerveza: " + nuevo.Id + ". Detalle: " + nuevo.Nombre + ", " + nuevo.NombreMarca + ", " + nuevo.NombreEstilo
+                     + ", " + nuevo.NombrePais + ", " + nuevo.NombreCiudad + ", Ibu=" + nuevo.Ibu + ", Alcohol=" + nuevo.Alcohol + "%, Contenido=" + nuevo.Contenido + ", " + nuevo.Observaciones);
                 return Accepted(nuevo);
             }
             catch (Exception ex)
             {
-                //return BadRequest(ex.Message);
-                return BadRequest("Hubo un problema al guardar la cerveza");
+                _logger.LogError("Ocurrió un error al insertar la cerveza: " + nuevo.Nombre + ". Detalle: " + ex.Message);
+                return BadRequest("Hubo un problema al guardar la cerveza: " +  ex.Message);
             }
         }
 
@@ -264,6 +269,14 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(CervezaDTO actualiza)
         {
+            string oldName = "";
+            string oldMarca = "";
+            string oldEstilo = "";
+            string oldCiudad = "";
+            string oldIbu = "";
+            string oldAlcohol = "";
+            string oldContenido = "";
+            string oldObservaciones = "";
             try
             {
                 Cerveza _cerveza = (from h in _contexto.Cervezas where h.Id == actualiza.Id select h).FirstOrDefault();
@@ -292,7 +305,14 @@ namespace MayiBeerCollection.Controllers
                         _contexto.SaveChanges();
                     }
                 }
-
+                oldName = _cerveza.Nombre;
+                oldMarca = _cerveza.IdMarca > 0? _cerveza.IdMarca.ToString(): "";
+                oldEstilo = _cerveza.IdEstilo > 0 ? _cerveza.IdEstilo.ToString() : "";
+                oldCiudad = _cerveza.IdCiudad > 0 ? _cerveza.IdCiudad.ToString() : "";
+                oldIbu = _cerveza.Ibu > 0 ? _cerveza.Ibu.ToString() : ""    ;
+                oldAlcohol = _cerveza.Alcohol > 0 ? _cerveza.Alcohol.ToString() : ""    ;
+                oldContenido = _cerveza.Contenido > 0 ? _cerveza.Contenido.ToString() : ""  ;
+                oldObservaciones = _cerveza.Observaciones;
                 _cerveza.Nombre = actualiza.Nombre;
                 _cerveza.Ibu = actualiza.Ibu;
                 _cerveza.Alcohol = actualiza.Alcohol;
@@ -304,11 +324,13 @@ namespace MayiBeerCollection.Controllers
 
                 _contexto.Cervezas.Update(_cerveza);
                 _contexto.SaveChanges();
-
+                _logger.LogWarning("Se actualizó la cerveza: " + actualiza.Id + ". Datos anteriores: " + oldName + ", IdMarca=" + oldMarca + ", IdEstilo=" + oldEstilo
+                + ", IdCiudad=" + oldCiudad + ", Ibu=" + oldIbu + " ,Alcohol=" + oldIbu + "%, Contenido=" + oldContenido + "ml/cc, Observaciones=" + oldObservaciones);
                 return Accepted(actualiza);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Ocurrió un error al actualizar la cerveza: " + oldName + ". Detalle: " + ex.Message);
                 return BadRequest("Hubo un problema al guardar la cerveza");
             }
         }
@@ -316,9 +338,9 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int CervezaId)
         {
+            Cerveza _cerveza = (from h in _contexto.Cervezas where h.Id == CervezaId select h).FirstOrDefault();
             try
             {
-                Cerveza _cerveza = (from h in _contexto.Cervezas where h.Id == CervezaId select h).FirstOrDefault();
 
                 if (_cerveza == null)
                 {
@@ -335,11 +357,12 @@ namespace MayiBeerCollection.Controllers
 
                 _contexto.Cervezas.Remove(_cerveza);
                 _contexto.SaveChanges();
-
+                _logger.LogWarning("Se eliminó la cerveza: " + CervezaId + ", " + _cerveza.Nombre);
                 return Accepted(CervezaId);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Ocurrió un error al eliminar la cerveza: " + CervezaId + ", " + _cerveza.Nombre + ". Detalle: " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }

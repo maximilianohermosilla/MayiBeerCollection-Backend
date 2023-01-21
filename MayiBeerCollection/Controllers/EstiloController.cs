@@ -20,12 +20,13 @@ namespace MayiBeerCollection.Controllers
         private MayiBeerCollectionContext _contexto;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-
-        public EstiloController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper)
+        private readonly ILogger<EstiloController> _logger;
+        public EstiloController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper, ILogger<EstiloController> logger)
         {
             _contexto = context;
             _configuration = configuration;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("listar/")]
@@ -76,7 +77,7 @@ namespace MayiBeerCollection.Controllers
                 string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
                 item.Imagen = stringArchivo;
             }
-
+            _logger.LogWarning("Búsqueda de Estilo Id: " + EstiloId + ". Resultados: " + item.Nombre);
             return Accepted(item);
         }
 
@@ -102,11 +103,13 @@ namespace MayiBeerCollection.Controllers
 
                 nuevo.Id = _estilo.Id;
 
+                _logger.LogWarning("Se insertó un nuevo estilo: " + nuevo.Id + ". Nombre: " + nuevo.Nombre);
                 return Accepted(nuevo);
 
             }
             catch (Exception ex)
             {
+                _logger.LogError("Ocurrió un error al insertar el estilo: " + nuevo.Nombre + ". Detalle: " + ex.Message);
                 return BadRequest(ex.Message);
             }            
         }
@@ -115,6 +118,7 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(EstiloDTO actualiza)
         {
+            string oldName = "";
             try
             {
                 Estilo _estilo = (from h in _contexto.Estilos where h.Id == actualiza.Id select h).FirstOrDefault();
@@ -123,6 +127,7 @@ namespace MayiBeerCollection.Controllers
                 {
                     return NotFound(actualiza);
                 }
+                oldName = _estilo.Nombre;
                 _estilo.Nombre = actualiza.Nombre;
 
                 if (actualiza.Imagen != null)
@@ -148,6 +153,7 @@ namespace MayiBeerCollection.Controllers
                 _contexto.Estilos.Update(_estilo);
                 _contexto.SaveChanges();
 
+                _logger.LogWarning("Se actualizó el estilo: " + actualiza.Id + ". Nombre anterior: " + oldName + ". Nombre actual: " + actualiza.Nombre);
                 return Accepted(actualiza);
 
             }
@@ -185,7 +191,7 @@ namespace MayiBeerCollection.Controllers
 
             _contexto.Estilos.Remove(_estilo);
             _contexto.SaveChanges();
-
+            _logger.LogWarning("Se eliminó el estilo: " + EstiloId + ", " + _estilo.Nombre);
             return Accepted(EstiloId);
         }
     }

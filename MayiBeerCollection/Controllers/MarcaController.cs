@@ -54,7 +54,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("listarProxy/")]
         public ActionResult<IEnumerable<MarcaDTO>> MarcasProxy()
         {
-            _logger.LogWarning("Lista de marcas proxy");
+            //_logger.LogWarning("Lista de marcas proxy");
             var lst = (from tbl in _contexto.Marcas where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).OrderBy(e => e.Nombre).ToList();
 
             List<MarcaDTO> marcasDTO = _mapper.Map<List<MarcaDTO>>(lst);
@@ -81,7 +81,7 @@ namespace MayiBeerCollection.Controllers
                 string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
                 item.Imagen = stringArchivo;
             }
-
+            _logger.LogWarning("Búsqueda de Marca Id: " + MarcaId + ". Resultados: " + item.Nombre);
             return Accepted(item);
         }
 
@@ -107,20 +107,24 @@ namespace MayiBeerCollection.Controllers
 
                 nuevo.Id = _marca.Id;
 
+                _logger.LogWarning("Se insertó una nueva marca: " + nuevo.Id + ". Nombre: " + nuevo.Nombre);
                 return Accepted(nuevo);
 
             }
             catch (Exception ex)
             {
+                _logger.LogError("Ocurrió un error al insertar la marca: " + nuevo.Nombre + ". Detalle: " + ex.Message);
                 return BadRequest(ex.Message);
-            }     
+            }
+
+            
         }
 
         [HttpPut("actualizar")]
         [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(MarcaDTO actualiza)
         {
-            _logger.LogWarning("Se actualizo una marca");
+            string oldName = "";
             try
             {
                 Marca _marca = (from h in _contexto.Marcas where h.Id == actualiza.Id select h).FirstOrDefault();
@@ -129,8 +133,8 @@ namespace MayiBeerCollection.Controllers
                 {
                     return NotFound(actualiza);
                 }
+                oldName = _marca.Nombre;
                 _marca.Nombre = actualiza.Nombre;
-
                 if (actualiza.Imagen != null)
                 {
                     byte[] bytes = Encoding.ASCII.GetBytes(actualiza.Imagen);
@@ -153,11 +157,12 @@ namespace MayiBeerCollection.Controllers
 
                 _contexto.Marcas.Update(_marca);
                 _contexto.SaveChanges();
-
+                _logger.LogWarning("Se actualizó la marca: " + actualiza.Id + ". Nombre anterior: " + oldName + ". Nombre actual: " + actualiza.Nombre);
                 return Accepted(actualiza);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Ocurrió un error al actualizar la marca: " + oldName + ". Detalle: " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -175,7 +180,7 @@ namespace MayiBeerCollection.Controllers
 
             List<Cerveza> _cervezas = (from tbl in _contexto.Cervezas where tbl.IdMarca == MarcaId select tbl).ToList();
             if (_cervezas.Count() > 0)
-            {
+            {                
                 return BadRequest("No se puede eliminar la marca porque tiene una o más cervezas asociadas");
             }
 
@@ -189,7 +194,7 @@ namespace MayiBeerCollection.Controllers
 
             _contexto.Marcas.Remove(_marca);
             _contexto.SaveChanges();
-
+            _logger.LogWarning("Se eliminó la marca: " + MarcaId + ", " + _marca.Nombre);
             return Accepted(MarcaId);
         }
     }

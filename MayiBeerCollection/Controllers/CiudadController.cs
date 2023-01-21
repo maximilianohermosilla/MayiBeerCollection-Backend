@@ -21,12 +21,14 @@ namespace MayiBeerCollection.Controllers
         private MayiBeerCollectionContext _contexto;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly ILogger<CiudadController> _logger;
 
-        public CiudadController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper)
+        public CiudadController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper, ILogger<CiudadController> logger)
         {
             _contexto = context;
             _configuration = configuration;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -69,7 +71,7 @@ namespace MayiBeerCollection.Controllers
                     item.PaisNombre = _pais.Nombre;
                 }
             }
-
+            
             return Accepted(ciudadesDTO);
         }
 
@@ -90,6 +92,7 @@ namespace MayiBeerCollection.Controllers
                 ciudadDTO.PaisNombre = _pais.Nombre;
             }
 
+            _logger.LogWarning("Búsqueda de Marca Id: " + CiudadId + ". Resultados: " + ciudadDTO.Nombre + ", " + _pais.Nombre);
             return Accepted(ciudadDTO);
         }
 
@@ -104,6 +107,7 @@ namespace MayiBeerCollection.Controllers
 
             nuevo.Id = _ciudad.Id;
 
+            _logger.LogWarning("Se insertó una nueva ciudad: " + nuevo.Id + ". Nombre: " + nuevo.Nombre);
             return Accepted(nuevo);
         }
 
@@ -111,20 +115,20 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(CiudadDTO actualiza)
         {
-
+            string oldName = "";
             Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == actualiza.Id select h).FirstOrDefault();
 
             if (_ciudad == null)
             {
                 return NotFound(actualiza);
             }
-
+            oldName = _ciudad.Nombre;
             _ciudad.Nombre = actualiza.Nombre;
             _ciudad.IdPais = actualiza.IdPais;
 
             _contexto.Ciudads.Update(_ciudad);
             _contexto.SaveChanges();
-
+            _logger.LogWarning("Se actualizó la ciudad: " + actualiza.Id + ". Nombre anterior: " + oldName + ". Nombre actual: " + actualiza.Nombre);
             return Accepted(actualiza);
         }
         [HttpDelete("eliminar/{CiudadId}")]
@@ -146,7 +150,7 @@ namespace MayiBeerCollection.Controllers
 
             _contexto.Ciudads.Remove(_ciudad);
             _contexto.SaveChanges();
-
+            _logger.LogWarning("Se eliminó la ciudad: " + CiudadId + ", " + _ciudad.Nombre);
             return Accepted(CiudadId);
         }
     }

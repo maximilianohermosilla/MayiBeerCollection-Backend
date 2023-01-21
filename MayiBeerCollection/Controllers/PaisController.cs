@@ -20,12 +20,14 @@ namespace MayiBeerCollection.Controllers
         private MayiBeerCollectionContext _contexto;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly ILogger<PaisController> _logger;
 
-        public PaisController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper)
+        public PaisController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper, ILogger<PaisController> logger)
         {
             _contexto = context;
             _configuration = configuration;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("listar/")]        
@@ -93,6 +95,7 @@ namespace MayiBeerCollection.Controllers
                 item.Imagen = stringArchivo;
             }
 
+            _logger.LogWarning("Búsqueda de País Id: " + PaisId + ". Resultados: " + item.Nombre);
             return Accepted(item);
         }
 
@@ -118,10 +121,12 @@ namespace MayiBeerCollection.Controllers
 
                 nuevoPais.Id = _pais.Id;
 
+                _logger.LogWarning("Se insertó un nuevo país: " + nuevoPais.Id + ". Nombre: " + nuevoPais.Nombre);
                 return Accepted(nuevoPais);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Ocurrió un error al insertar el país: " + nuevoPais.Nombre + ". Detalle: " + ex.Message);
                 return BadRequest(ex.Message);
             }   
         }
@@ -130,6 +135,7 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(PaisDTO actualiza)
         {
+            string oldName = "";
             try
             {
                 Pai _pais = (from h in _contexto.Pais where h.Id == actualiza.Id select h).FirstOrDefault();
@@ -138,6 +144,7 @@ namespace MayiBeerCollection.Controllers
                 {
                     return NotFound(actualiza);
                 }
+                oldName = _pais.Nombre;
                 _pais.Nombre = actualiza.Nombre;
 
                 if (actualiza.Imagen != null)
@@ -162,11 +169,12 @@ namespace MayiBeerCollection.Controllers
 
                 _contexto.Pais.Update(_pais);
                 _contexto.SaveChanges();
-
+                _logger.LogWarning("Se actualizó el país: " + actualiza.Id + ". Nombre anterior: " + oldName + ". Nombre actual: " + actualiza.Nombre);
                 return Accepted(actualiza);
             }
             catch (Exception ex)
             {
+                _logger.LogError("Ocurrió un error al actualizar el país: " + oldName + ". Detalle: " + ex.Message);
                 return BadRequest(ex.Message);
             }
         }
@@ -198,7 +206,7 @@ namespace MayiBeerCollection.Controllers
 
             _contexto.Pais.Remove(_pais);
             _contexto.SaveChanges();
-
+            _logger.LogWarning("Se eliminó el país: " + PaisId + ", " + _pais.Nombre);
             return Accepted(PaisId);
         }
     }
