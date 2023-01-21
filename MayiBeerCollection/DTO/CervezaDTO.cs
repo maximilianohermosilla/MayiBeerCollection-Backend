@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Nombre { get; set; } = null!;
-        public int? Ibu { get; set; }
+        public double? Ibu { get; set; }
         public double? Alcohol { get; set; }
         public int IdMarca { get; set; }
         public string? NombreMarca { get; set; }

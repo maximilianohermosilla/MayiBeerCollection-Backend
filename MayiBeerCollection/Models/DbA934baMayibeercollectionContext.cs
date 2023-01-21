@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MayiBeerCollection.Models;
 
-public partial class MayiBeerCollectionContext : DbContext
+public partial class DbA934baMayibeercollectionContext : DbContext
 {
-    public MayiBeerCollectionContext()
+    public DbA934baMayibeercollectionContext()
     {
     }
 
-    public MayiBeerCollectionContext(DbContextOptions<MayiBeerCollectionContext> options)
+    public DbA934baMayibeercollectionContext(DbContextOptions<DbA934baMayibeercollectionContext> options)
         : base(options)
     {
     }
@@ -35,11 +35,12 @@ public partial class MayiBeerCollectionContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost; Database=MayiBeerCollection; Trusted_Connection=True; TrustServerCertificate=True");
-        //=> optionsBuilder.UseSqlServer("Data Source=SQL5097.site4now.net;Initial Catalog=db_a934ba_mayibeercollection;User Id=db_a934ba_mayibeercollection_admin;Password=Caslacapo1908**");
+        => optionsBuilder.UseSqlServer("Data Source=SQL5097.site4now.net;Initial Catalog=db_a934ba_mayibeercollection;User Id=db_a934ba_mayibeercollection_admin;Password=Caslacapo1908**");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("Modern_Spanish_CI_AS");
+
         modelBuilder.Entity<Archivo>(entity =>
         {
             entity.ToTable("Archivo");
@@ -74,9 +75,7 @@ public partial class MayiBeerCollectionContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Observaciones)
-                .HasMaxLength(200)
-                .IsUnicode(false);
+            entity.Property(e => e.Observaciones).IsUnicode(false);
 
             entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Cervezas)
                 .HasForeignKey(d => d.IdArchivo)
@@ -88,7 +87,6 @@ public partial class MayiBeerCollectionContext : DbContext
 
             entity.HasOne(d => d.IdEstiloNavigation).WithMany(p => p.Cervezas)
                 .HasForeignKey(d => d.IdEstilo)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Cerveza_Estilo");
 
             entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.Cervezas)

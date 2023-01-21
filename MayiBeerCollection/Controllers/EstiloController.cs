@@ -51,7 +51,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("listarProxy/")]
         public ActionResult<IEnumerable<EstiloDTO>> EstilosProxy()
         {
-            var lst = (from tbl in _contexto.Estilos where tbl.Id > 0 select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
+            var lst = (from tbl in _contexto.Estilos where tbl.Id > 0 select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).OrderBy(e => e.Nombre).ToList();
 
             List<EstiloDTO> estilosDTO = _mapper.Map<List<EstiloDTO>>(lst);
 

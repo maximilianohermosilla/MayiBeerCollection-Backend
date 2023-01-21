@@ -83,7 +83,7 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                List<Cerveza> lst = (from tbl in _contexto.Cervezas where tbl.Id > 0 select tbl).ToList();
+                List<Cerveza> lst = (from tbl in _contexto.Cervezas where tbl.Id > 0 select tbl).OrderBy(e => e.IdMarca).ToList();
 
                 List<CervezaDTO> cervezasDTO = _mapper.Map<List<CervezaDTO>>(lst);
 

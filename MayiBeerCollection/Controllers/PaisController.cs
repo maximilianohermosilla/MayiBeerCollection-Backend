@@ -57,7 +57,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("listarProxy/")]
         public ActionResult<IEnumerable<PaisDTO>> PaisesProxy()
         {
-            List<Pai> lst = (from tbl in _contexto.Pais where tbl.Id > 0 select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
+            List<Pai> lst = (from tbl in _contexto.Pais where tbl.Id > 0 select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).OrderBy(e => e.Nombre).ToList();
 
             List<PaisDTO> _paises = _mapper.Map<List<PaisDTO>>(lst);
 

@@ -9,13 +9,13 @@ public partial class Cerveza
 
     public string Nombre { get; set; } = null!;
 
-    public int? Ibu { get; set; }
+    public double? Ibu { get; set; }
 
     public double? Alcohol { get; set; }
 
     public int IdMarca { get; set; }
 
-    public int IdEstilo { get; set; }
+    public int? IdEstilo { get; set; }
 
     public int? IdCiudad { get; set; }
 
@@ -31,7 +31,7 @@ public partial class Cerveza
 
     public virtual Ciudad? IdCiudadNavigation { get; set; }
 
-    public virtual Estilo IdEstiloNavigation { get; set; } = null!;
+    public virtual Estilo? IdEstiloNavigation { get; set; }
 
     public virtual Marca IdMarcaNavigation { get; set; } = null!;
 }

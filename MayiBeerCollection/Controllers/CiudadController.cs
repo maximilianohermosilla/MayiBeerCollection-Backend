@@ -32,7 +32,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Ciudad>> Ciudades()
         {
-            List<Ciudad> lst = (from tbl in _contexto.Ciudads where tbl.Id > 0 select tbl).ToList();
+            List<Ciudad> lst = (from tbl in _contexto.Ciudads where tbl.Id > 0 select tbl).OrderBy(e => e.IdPais).ThenBy(e => e.Nombre).ToList();
 
             List<CiudadDTO> ciudadesDTO = _mapper.Map<List<CiudadDTO>>(lst);
 
