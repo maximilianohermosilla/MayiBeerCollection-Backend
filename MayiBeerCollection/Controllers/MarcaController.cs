@@ -9,6 +9,7 @@ using MayiBeerCollection.DTO;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
+using System.Security.Claims;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -20,12 +21,14 @@ namespace MayiBeerCollection.Controllers
         private MayiBeerCollectionContext _contexto;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
+        private readonly ILogger<MarcaController> _logger;
 
-        public MarcaController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper)
+        public MarcaController(MayiBeerCollectionContext context, IConfiguration configuration, IMapper mapper, ILogger<MarcaController> logger)
         {
             _contexto = context;
             _configuration = configuration;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("listar/")]
@@ -51,6 +54,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("listarProxy/")]
         public ActionResult<IEnumerable<MarcaDTO>> MarcasProxy()
         {
+            _logger.LogWarning("Lista de marcas proxy");
             var lst = (from tbl in _contexto.Marcas where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).OrderBy(e => e.Nombre).ToList();
 
             List<MarcaDTO> marcasDTO = _mapper.Map<List<MarcaDTO>>(lst);
@@ -116,6 +120,7 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult actualizar(MarcaDTO actualiza)
         {
+            _logger.LogWarning("Se actualizo una marca");
             try
             {
                 Marca _marca = (from h in _contexto.Marcas where h.Id == actualiza.Id select h).FirstOrDefault();
