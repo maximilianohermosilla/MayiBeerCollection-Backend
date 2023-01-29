@@ -32,13 +32,13 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("listar/")]
         public ActionResult<IEnumerable<EstiloDTO>> Estilos()
         {
-            var lst = (from tbl in _contexto.Estilos where tbl.Id > 0 select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
+            var lst = (from tbl in _contexto.Estilo where tbl.Id > 0 select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
 
             List<EstiloDTO> estilosDTO = _mapper.Map<List<EstiloDTO>>(lst);
 
             foreach (var item in estilosDTO)
             {
-                Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+                Archivo _archivo = (from h in _contexto.Archivo where h.Id == item.IdArchivo select h).FirstOrDefault();
                 if (_archivo != null)
                 {
                     string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
@@ -52,7 +52,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("listarProxy/")]
         public ActionResult<IEnumerable<EstiloDTO>> EstilosProxy()
         {
-            var lst = (from tbl in _contexto.Estilos where tbl.Id > 0 select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).OrderBy(e => e.Nombre).ToList();
+            var lst = (from tbl in _contexto.Estilo where tbl.Id > 0 select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).OrderBy(e => e.Nombre).ToList();
 
             List<EstiloDTO> estilosDTO = _mapper.Map<List<EstiloDTO>>(lst);
 
@@ -62,7 +62,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("buscar/{EstiloId}")]
         public ActionResult<EstiloDTO> Estilos(int EstiloId)
         {
-            Estilo cl = (from tbl in _contexto.Estilos where tbl.Id == EstiloId select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).FirstOrDefault();
+            Estilo cl = (from tbl in _contexto.Estilo where tbl.Id == EstiloId select new Estilo() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).FirstOrDefault();
             if (cl == null)
             {
                 return NotFound(EstiloId);
@@ -70,7 +70,7 @@ namespace MayiBeerCollection.Controllers
 
             EstiloDTO item = _mapper.Map<EstiloDTO>(cl);
 
-            Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+            Archivo _archivo = (from h in _contexto.Archivo where h.Id == item.IdArchivo select h).FirstOrDefault();
 
             if (_archivo != null)
             {
@@ -93,12 +93,12 @@ namespace MayiBeerCollection.Controllers
                 {
                     byte[] bytes = Encoding.ASCII.GetBytes(nuevo.Imagen);
                     Archivo newArch = new Archivo() { Archivo1 = bytes };
-                    _contexto.Archivos.Add(newArch);
+                    _contexto.Archivo.Add(newArch);
                     _contexto.SaveChanges();                    
                     _estilo.IdArchivo = newArch.Id;
                 }
 
-                _contexto.Estilos.Add(_estilo);
+                _contexto.Estilo.Add(_estilo);
                 _contexto.SaveChanges();
 
                 nuevo.Id = _estilo.Id;
@@ -121,7 +121,7 @@ namespace MayiBeerCollection.Controllers
             string oldName = "";
             try
             {
-                Estilo _estilo = (from h in _contexto.Estilos where h.Id == actualiza.Id select h).FirstOrDefault();
+                Estilo _estilo = (from h in _contexto.Estilo where h.Id == actualiza.Id select h).FirstOrDefault();
 
                 if (_estilo == null)
                 {
@@ -133,24 +133,24 @@ namespace MayiBeerCollection.Controllers
                 if (actualiza.Imagen != null)
                 {
                     byte[] bytes = Encoding.ASCII.GetBytes(actualiza.Imagen);
-                    Archivo arch = (from a in _contexto.Archivos where a.Id == _estilo.IdArchivo select a).FirstOrDefault();
+                    Archivo arch = (from a in _contexto.Archivo where a.Id == _estilo.IdArchivo select a).FirstOrDefault();
 
                     if (arch == null)
                     {
                         Archivo newArch = new Archivo() { Archivo1 = bytes };
-                        _contexto.Archivos.Add(newArch);
+                        _contexto.Archivo.Add(newArch);
                         _contexto.SaveChanges();
                         _estilo.IdArchivo = newArch.Id;
                     }
                     else
                     {
                         arch.Archivo1 = bytes;
-                        _contexto.Archivos.Update(arch);
+                        _contexto.Archivo.Update(arch);
                         _contexto.SaveChanges();
                     }
                 }  
 
-                _contexto.Estilos.Update(_estilo);
+                _contexto.Estilo.Update(_estilo);
                 _contexto.SaveChanges();
 
                 _logger.LogWarning("Se actualizó el estilo: " + actualiza.Id + ". Nombre anterior: " + oldName + ". Nombre actual: " + actualiza.Nombre);
@@ -168,16 +168,16 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int EstiloId)
         {
-            Estilo _estilo = (from h in _contexto.Estilos where h.Id == EstiloId select h).FirstOrDefault();
+            Estilo _estilo = (from h in _contexto.Estilo where h.Id == EstiloId select h).FirstOrDefault();
 
             if (_estilo == null)
             {
                 return NotFound(EstiloId);
             }
 
-            Archivo arch = (from a in _contexto.Archivos where a.Id == _estilo.IdArchivo select a).FirstOrDefault();
+            Archivo arch = (from a in _contexto.Archivo where a.Id == _estilo.IdArchivo select a).FirstOrDefault();
 
-            List<Cerveza> _cervezas = (from tbl in _contexto.Cervezas where tbl.IdEstilo == EstiloId select tbl).ToList();
+            List<Cerveza> _cervezas = (from tbl in _contexto.Cerveza where tbl.IdEstilo == EstiloId select tbl).ToList();
             if (_cervezas.Count() > 0)
             {
                 return BadRequest("No se puede eliminar el estilo porque tiene una o más cervezas asociadas");
@@ -185,11 +185,11 @@ namespace MayiBeerCollection.Controllers
 
             if (arch != null)
             {
-                _contexto.Archivos.Remove(arch);
+                _contexto.Archivo.Remove(arch);
                 _contexto.SaveChanges();
             }
 
-            _contexto.Estilos.Remove(_estilo);
+            _contexto.Estilo.Remove(_estilo);
             _contexto.SaveChanges();
             _logger.LogWarning("Se eliminó el estilo: " + EstiloId + ", " + _estilo.Nombre);
             return Accepted(EstiloId);

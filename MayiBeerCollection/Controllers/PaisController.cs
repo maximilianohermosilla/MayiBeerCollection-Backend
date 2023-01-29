@@ -33,19 +33,19 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("listar/")]        
         public ActionResult<IEnumerable<PaisDTO>> Pais()
         {
-            List<Pai> lst = (from tbl in _contexto.Pais where tbl.Id > 0 select new Pai() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
+            List<Pais> lst = (from tbl in _contexto.Pais where tbl.Id > 0 select new Pais() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
 
             List<PaisDTO> _paises = _mapper.Map<List<PaisDTO>>(lst);
 
             foreach (var item in _paises)
             {
-                List<Ciudad> _ciudades = (from tbl in _contexto.Ciudads where tbl.IdPais == item.Id select tbl).ToList();
+                List<Ciudad> _ciudades = (from tbl in _contexto.Ciudad where tbl.IdPais == item.Id select tbl).ToList();
                 if (_ciudades != null)
                 {
                     item.ciudades = _ciudades;
                 }
 
-                Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+                Archivo _archivo = (from h in _contexto.Archivo where h.Id == item.IdArchivo select h).FirstOrDefault();
                 if (_archivo != null)
                 {
                     string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
@@ -65,7 +65,7 @@ namespace MayiBeerCollection.Controllers
 
             foreach (var item in _paises)
             {
-                List<Ciudad> _ciudades = (from tbl in _contexto.Ciudads where tbl.IdPais == item.Id select tbl).ToList();
+                List<Ciudad> _ciudades = (from tbl in _contexto.Ciudad where tbl.IdPais == item.Id select tbl).ToList();
                 if (_ciudades != null)
                 {
                     item.ciudades = _ciudades;
@@ -87,7 +87,7 @@ namespace MayiBeerCollection.Controllers
 
             PaisDTO item = _mapper.Map<PaisDTO>(cl);
 
-            Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+            Archivo _archivo = (from h in _contexto.Archivo where h.Id == item.IdArchivo select h).FirstOrDefault();
 
             if (_archivo != null)
             {
@@ -105,13 +105,13 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                Pai _pais = _mapper.Map<Pai>(nuevoPais);
+                Pais _pais = _mapper.Map<Pais>(nuevoPais);
 
                 if (nuevoPais.Imagen != null)
                 {
                     byte[] bytes = Encoding.ASCII.GetBytes(nuevoPais.Imagen);
                     Archivo newArch = new Archivo() { Archivo1 = bytes };
-                    _contexto.Archivos.Add(newArch);
+                    _contexto.Archivo.Add(newArch);
                     _contexto.SaveChanges();
                     _pais.IdArchivo = newArch.Id;
                 }
@@ -138,7 +138,7 @@ namespace MayiBeerCollection.Controllers
             string oldName = "";
             try
             {
-                Pai _pais = (from h in _contexto.Pais where h.Id == actualiza.Id select h).FirstOrDefault();
+                Pais _pais = (from h in _contexto.Pais where h.Id == actualiza.Id select h).FirstOrDefault();
 
                 if (_pais == null)
                 {
@@ -150,19 +150,19 @@ namespace MayiBeerCollection.Controllers
                 if (actualiza.Imagen != null)
                 {
                     byte[] bytes = Encoding.ASCII.GetBytes(actualiza.Imagen);
-                    Archivo arch = (from a in _contexto.Archivos where a.Id == _pais.IdArchivo select a).FirstOrDefault();
+                    Archivo arch = (from a in _contexto.Archivo where a.Id == _pais.IdArchivo select a).FirstOrDefault();
 
                     if (arch == null)
                     {
                         Archivo newArch = new Archivo() { Archivo1 = bytes };
-                        _contexto.Archivos.Add(newArch);
+                        _contexto.Archivo.Add(newArch);
                         _contexto.SaveChanges();
                         _pais.IdArchivo = newArch.Id;
                     }
                     else
                     {
                         arch.Archivo1 = bytes;
-                        _contexto.Archivos.Update(arch);
+                        _contexto.Archivo.Update(arch);
                         _contexto.SaveChanges();
                     }
                 }
@@ -183,24 +183,24 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int PaisId)
         {
-            Pai _pais = (from h in _contexto.Pais where h.Id == PaisId select h).FirstOrDefault();
+            Pais _pais = (from h in _contexto.Pais where h.Id == PaisId select h).FirstOrDefault();
 
             if (_pais == null)
             {
                 return NotFound("No se encontró el elemento" + PaisId);
             }
 
-            List<Ciudad> _ciudades = (from tbl in _contexto.Ciudads where tbl.IdPais == PaisId select tbl).ToList();
+            List<Ciudad> _ciudades = (from tbl in _contexto.Ciudad where tbl.IdPais == PaisId select tbl).ToList();
             if (_ciudades.Count() > 0)
             {
                 return BadRequest("No se puede eliminar el país porque tiene una o más ciudades asociadas");
             }
 
-            Archivo arch = (from a in _contexto.Archivos where a.Id == _pais.IdArchivo select a).FirstOrDefault();
+            Archivo arch = (from a in _contexto.Archivo where a.Id == _pais.IdArchivo select a).FirstOrDefault();
 
             if (arch != null)
             {
-                _contexto.Archivos.Remove(arch);
+                _contexto.Archivo.Remove(arch);
                 _contexto.SaveChanges();
             }
 

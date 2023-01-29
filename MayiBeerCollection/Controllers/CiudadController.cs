@@ -34,13 +34,13 @@ namespace MayiBeerCollection.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Ciudad>> Ciudades()
         {
-            List<Ciudad> lst = (from tbl in _contexto.Ciudads where tbl.Id > 0 select tbl).OrderBy(e => e.IdPais).ThenBy(e => e.Nombre).ToList();
+            List<Ciudad> lst = (from tbl in _contexto.Ciudad where tbl.Id > 0 select tbl).OrderBy(e => e.IdPais).ThenBy(e => e.Nombre).ToList();
 
             List<CiudadDTO> ciudadesDTO = _mapper.Map<List<CiudadDTO>>(lst);
 
             foreach (var item in ciudadesDTO)
             {
-                Pai _pais = (from h in _contexto.Pais where h.Id == item.IdPais select h).FirstOrDefault();
+                Pais _pais = (from h in _contexto.Pais where h.Id == item.IdPais select h).FirstOrDefault();
                 if (_pais != null)
                 {
                     item.PaisNombre = _pais.Nombre;
@@ -53,8 +53,8 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("buscarPais/{PaisId}")]
         public ActionResult<IEnumerable<Ciudad>> CiudadesByPais(int PaisId)
         {
-            Pai _pais = (from h in _contexto.Pais where h.Id == PaisId select h).FirstOrDefault();
-            List<Ciudad> lst = (from tbl in _contexto.Ciudads where tbl.IdPais == PaisId select tbl).ToList();
+            Pais _pais = (from h in _contexto.Pais where h.Id == PaisId select h).FirstOrDefault();
+            List<Ciudad> lst = (from tbl in _contexto.Ciudad where tbl.IdPais == PaisId select tbl).ToList();
             List<CiudadDTO> ciudadesDTO = _mapper.Map<List<CiudadDTO>>(lst);
 
 
@@ -78,7 +78,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("buscar/{CiudadId}")]
         public ActionResult<Ciudad> Ciudades(int CiudadId)
         {
-            Ciudad cl = (from tbl in _contexto.Ciudads where tbl.Id == CiudadId select tbl).FirstOrDefault();
+            Ciudad cl = (from tbl in _contexto.Ciudad where tbl.Id == CiudadId select tbl).FirstOrDefault();
 
             if (cl == null)
             {
@@ -86,7 +86,7 @@ namespace MayiBeerCollection.Controllers
             }
             CiudadDTO ciudadDTO = _mapper.Map<CiudadDTO>(cl);
 
-            Pai _pais = (from h in _contexto.Pais where h.Id == cl.IdPais select h).FirstOrDefault();
+            Pais _pais = (from h in _contexto.Pais where h.Id == cl.IdPais select h).FirstOrDefault();
             if (_pais != null)
             {
                 ciudadDTO.PaisNombre = _pais.Nombre;
@@ -102,7 +102,7 @@ namespace MayiBeerCollection.Controllers
         {
             Ciudad _ciudad = _mapper.Map<Ciudad>(nuevo);
 
-            _contexto.Ciudads.Add(_ciudad);
+            _contexto.Ciudad.Add(_ciudad);
             _contexto.SaveChanges();
 
             nuevo.Id = _ciudad.Id;
@@ -116,7 +116,7 @@ namespace MayiBeerCollection.Controllers
         public ActionResult actualizar(CiudadDTO actualiza)
         {
             string oldName = "";
-            Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == actualiza.Id select h).FirstOrDefault();
+            Ciudad _ciudad = (from h in _contexto.Ciudad where h.Id == actualiza.Id select h).FirstOrDefault();
 
             if (_ciudad == null)
             {
@@ -126,7 +126,7 @@ namespace MayiBeerCollection.Controllers
             _ciudad.Nombre = actualiza.Nombre;
             _ciudad.IdPais = actualiza.IdPais;
 
-            _contexto.Ciudads.Update(_ciudad);
+            _contexto.Ciudad.Update(_ciudad);
             _contexto.SaveChanges();
             _logger.LogWarning("Se actualizó la ciudad: " + actualiza.Id + ". Nombre anterior: " + oldName + ". Nombre actual: " + actualiza.Nombre);
             return Accepted(actualiza);
@@ -135,20 +135,20 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int CiudadId)
         {
-            Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == CiudadId select h).FirstOrDefault();
+            Ciudad _ciudad = (from h in _contexto.Ciudad where h.Id == CiudadId select h).FirstOrDefault();
 
             if (_ciudad == null)
             {
                 return NotFound(CiudadId);
             }
 
-            List<Cerveza> _cervezas = (from tbl in _contexto.Cervezas where tbl.IdCiudad == CiudadId select tbl).ToList();
+            List<Cerveza> _cervezas = (from tbl in _contexto.Cerveza where tbl.IdCiudad == CiudadId select tbl).ToList();
             if (_cervezas.Count() > 0)
             {
                 return BadRequest("No se puede eliminar la ciudad porque tiene una o más cervezas asociadas");
             }
 
-            _contexto.Ciudads.Remove(_ciudad);
+            _contexto.Ciudad.Remove(_ciudad);
             _contexto.SaveChanges();
             _logger.LogWarning("Se eliminó la ciudad: " + CiudadId + ", " + _ciudad.Nombre);
             return Accepted(CiudadId);

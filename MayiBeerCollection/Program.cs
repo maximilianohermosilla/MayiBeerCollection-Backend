@@ -26,11 +26,15 @@ builder.Services.AddAutoMapper(config =>
     config.CreateMap<Marca, MarcaDTO>();
     config.CreateMap<MarcaDTO, Marca>();
 
-    config.CreateMap<Pai, PaisDTO>();
-    config.CreateMap<PaisDTO, Pai>();
+    config.CreateMap<Pais, PaisDTO>();
+    config.CreateMap<PaisDTO, Pais>();
 
     config.CreateMap<Usuario, UsuarioDTO>();
     config.CreateMap<UsuarioDTO, Usuario>();
+
+    config.CreateMap<Expediente, ExpedienteDTO>();
+    config.CreateMap<ExpedienteDTO, Expediente>();
+
 
 }, typeof(Program));
 
@@ -70,11 +74,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddDbContext<MayiBeerCollectionContext>(x => x.UseSqlServer("Data Source=SQL5097.site4now.net;Initial Catalog=db_a934ba_mayibeercollection;User Id=db_a934ba_mayibeercollection_admin;Password=Caslacapo1908**"));
+//builder.Services.AddDbContext<MayiBeerCollectionContext>(x => x.UseSqlServer("Server=localhost; Database=AmhWebDatabase; Trusted_Connection=True; TrustServerCertificate=True"));
 
 //SERILOG
 builder.Host.UseSerilog();
 
-Log.Logger = new LoggerConfiguration().CreateBootstrapLogger();
+Serilog.Log.Logger = new LoggerConfiguration().CreateBootstrapLogger();
 builder.Host.UseSerilog(((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration)));
 
 var app = builder.Build();

@@ -65,13 +65,13 @@ namespace MayiBeerCollection.Controllers
 
         private UsuarioDTO Authenticate(UsuarioLoginDTO userLogin)
         {
-            var _user = (from tbl in _contexto.Usuarios where tbl.Login == userLogin.Login && tbl.Password == userLogin.Password select tbl).FirstOrDefault();
+            var _user = (from tbl in _contexto.Usuario where tbl.Login == userLogin.Login && tbl.Password == userLogin.Password select tbl).FirstOrDefault();
 
             UsuarioDTO _userDTO = _mapper.Map<UsuarioDTO>(_user);
 
             if (_user != null)
             {
-                var _perfil = (from tbl in _contexto.Perfils where tbl.Id == _user.IdPerfil select tbl).FirstOrDefault();
+                var _perfil = (from tbl in _contexto.Perfil where tbl.Id == _user.IdPerfil select tbl).FirstOrDefault();
 
                 if (_perfil != null)
                 {

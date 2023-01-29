@@ -34,13 +34,13 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("listar/")]
         public ActionResult<IEnumerable<MarcaDTO>> Marcas()
         {
-            var lst = (from tbl in _contexto.Marcas where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
+            var lst = (from tbl in _contexto.Marca where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).ToList();
 
             List<MarcaDTO> marcasDTO = _mapper.Map<List<MarcaDTO>>(lst);
 
             foreach (var item in marcasDTO)
             {
-                Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+                Archivo _archivo = (from h in _contexto.Archivo where h.Id == item.IdArchivo select h).FirstOrDefault();
                 if (_archivo != null)
                 {
                     string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
@@ -55,7 +55,7 @@ namespace MayiBeerCollection.Controllers
         public ActionResult<IEnumerable<MarcaDTO>> MarcasProxy()
         {
             //_logger.LogWarning("Lista de marcas proxy");
-            var lst = (from tbl in _contexto.Marcas where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).OrderBy(e => e.Nombre).ToList();
+            var lst = (from tbl in _contexto.Marca where tbl.Id > 0 select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).OrderBy(e => e.Nombre).ToList();
 
             List<MarcaDTO> marcasDTO = _mapper.Map<List<MarcaDTO>>(lst);
 
@@ -66,7 +66,7 @@ namespace MayiBeerCollection.Controllers
         [HttpGet("buscar/{MarcaId}")]
         public ActionResult<MarcaDTO> Marcas(int MarcaId)
         {
-            Marca cl = (from tbl in _contexto.Marcas where tbl.Id == MarcaId select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).FirstOrDefault();
+            Marca cl = (from tbl in _contexto.Marca where tbl.Id == MarcaId select new Marca() { Id = tbl.Id, Nombre = tbl.Nombre, IdArchivo = tbl.IdArchivo }).FirstOrDefault();
             if (cl == null)
             {
                 return NotFound(MarcaId);
@@ -74,7 +74,7 @@ namespace MayiBeerCollection.Controllers
 
             MarcaDTO item = _mapper.Map<MarcaDTO>(cl);
 
-            Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+            Archivo _archivo = (from h in _contexto.Archivo where h.Id == item.IdArchivo select h).FirstOrDefault();
 
             if (_archivo != null)
             {
@@ -97,12 +97,12 @@ namespace MayiBeerCollection.Controllers
                 {
                     byte[] bytes = Encoding.ASCII.GetBytes(nuevo.Imagen);
                     Archivo newArch = new Archivo() { Archivo1 = bytes };
-                    _contexto.Archivos.Add(newArch);
+                    _contexto.Archivo.Add(newArch);
                     _contexto.SaveChanges();
                     _marca.IdArchivo = newArch.Id;
                 }
 
-                _contexto.Marcas.Add(_marca);
+                _contexto.Marca.Add(_marca);
                 _contexto.SaveChanges();
 
                 nuevo.Id = _marca.Id;
@@ -127,7 +127,7 @@ namespace MayiBeerCollection.Controllers
             string oldName = "";
             try
             {
-                Marca _marca = (from h in _contexto.Marcas where h.Id == actualiza.Id select h).FirstOrDefault();
+                Marca _marca = (from h in _contexto.Marca where h.Id == actualiza.Id select h).FirstOrDefault();
 
                 if (_marca == null)
                 {
@@ -138,24 +138,24 @@ namespace MayiBeerCollection.Controllers
                 if (actualiza.Imagen != null)
                 {
                     byte[] bytes = Encoding.ASCII.GetBytes(actualiza.Imagen);
-                    Archivo arch = (from a in _contexto.Archivos where a.Id == _marca.IdArchivo select a).FirstOrDefault();
+                    Archivo arch = (from a in _contexto.Archivo where a.Id == _marca.IdArchivo select a).FirstOrDefault();
 
                     if (arch == null)
                     {
                         Archivo newArch = new Archivo() { Archivo1 = bytes };
-                        _contexto.Archivos.Add(newArch);
+                        _contexto.Archivo.Add(newArch);
                         _contexto.SaveChanges();
                         _marca.IdArchivo = newArch.Id;
                     }
                     else
                     {
                         arch.Archivo1 = bytes;
-                        _contexto.Archivos.Update(arch);
+                        _contexto.Archivo.Update(arch);
                         _contexto.SaveChanges();
                     }
                 }
 
-                _contexto.Marcas.Update(_marca);
+                _contexto.Marca.Update(_marca);
                 _contexto.SaveChanges();
                 _logger.LogWarning("Se actualizó la marca: " + actualiza.Id + ". Nombre anterior: " + oldName + ". Nombre actual: " + actualiza.Nombre);
                 return Accepted(actualiza);
@@ -171,28 +171,28 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int MarcaId)
         {
-            Marca _marca = (from h in _contexto.Marcas where h.Id == MarcaId select h).FirstOrDefault();
+            Marca _marca = (from h in _contexto.Marca where h.Id == MarcaId select h).FirstOrDefault();
 
             if (_marca == null)
             {
                 return NotFound(MarcaId);
             }
 
-            List<Cerveza> _cervezas = (from tbl in _contexto.Cervezas where tbl.IdMarca == MarcaId select tbl).ToList();
+            List<Cerveza> _cervezas = (from tbl in _contexto.Cerveza where tbl.IdMarca == MarcaId select tbl).ToList();
             if (_cervezas.Count() > 0)
             {                
                 return BadRequest("No se puede eliminar la marca porque tiene una o más cervezas asociadas");
             }
 
-            Archivo arch = (from a in _contexto.Archivos where a.Id == _marca.IdArchivo select a).FirstOrDefault();
+            Archivo arch = (from a in _contexto.Archivo where a.Id == _marca.IdArchivo select a).FirstOrDefault();
 
             if (arch != null)
             {
-                _contexto.Archivos.Remove(arch);
+                _contexto.Archivo.Remove(arch);
                 _contexto.SaveChanges();
             }
 
-            _contexto.Marcas.Remove(_marca);
+            _contexto.Marca.Remove(_marca);
             _contexto.SaveChanges();
             _logger.LogWarning("Se eliminó la marca: " + MarcaId + ", " + _marca.Nombre);
             return Accepted(MarcaId);

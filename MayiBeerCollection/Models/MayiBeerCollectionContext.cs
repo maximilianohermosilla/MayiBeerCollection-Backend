@@ -15,42 +15,54 @@ public partial class MayiBeerCollectionContext : DbContext
     {
     }
 
-    public virtual DbSet<Archivo> Archivos { get; set; }
+    public virtual DbSet<Acto> Acto { get; set; }
 
-    public virtual DbSet<ArchivoFilestream> ArchivoFilestreams { get; set; }
+    public virtual DbSet<Archivo> Archivo { get; set; }
 
-    public virtual DbSet<Cerveza> Cervezas { get; set; }
+    public virtual DbSet<ArchivoFilestream> ArchivoFilestream { get; set; }
 
-    public virtual DbSet<Ciudad> Ciudads { get; set; }
+    public virtual DbSet<Caratula> Caratula { get; set; }
 
-    public virtual DbSet<Estilo> Estilos { get; set; }
+    public virtual DbSet<Cerveza> Cerveza { get; set; }
 
-    public virtual DbSet<Marca> Marcas { get; set; }
+    public virtual DbSet<Ciudad> Ciudad { get; set; }
 
-    public virtual DbSet<Pai> Pais { get; set; }
+    public virtual DbSet<Estilo> Estilo { get; set; }
 
-    public virtual DbSet<Perfil> Perfils { get; set; }
+    public virtual DbSet<Expediente> Expediente { get; set; }
 
-    public virtual DbSet<Usuario> Usuarios { get; set; }
+    public virtual DbSet<Log> Log { get; set; }
+
+    public virtual DbSet<Marca> Marca { get; set; }
+
+    public virtual DbSet<Pais> Pais { get; set; }
+
+    public virtual DbSet<Perfil> Perfil { get; set; }
+
+    public virtual DbSet<SituacionRevista> SituacionRevista { get; set; }
+
+    public virtual DbSet<Usuario> Usuario { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        //=> optionsBuilder.UseSqlServer("Server=localhost; Database=MayiBeerCollection; Trusted_Connection=True; TrustServerCertificate=True");
         => optionsBuilder.UseSqlServer("Data Source=SQL5097.site4now.net;Initial Catalog=db_a934ba_mayibeercollection;User Id=db_a934ba_mayibeercollection_admin;Password=Caslacapo1908**");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Acto>(entity =>
+        {
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<Archivo>(entity =>
         {
-            entity.ToTable("Archivo");
-
             entity.Property(e => e.Archivo1).HasColumnName("Archivo");
         });
 
         modelBuilder.Entity<ArchivoFilestream>(entity =>
         {
-            entity.ToTable("ArchivoFilestream");
-
             entity.HasIndex(e => e.Idguid, "UQ__ArchivoF__D1B7D08051915287").IsUnique();
 
             entity.Property(e => e.FileAttribute)
@@ -63,10 +75,15 @@ public partial class MayiBeerCollectionContext : DbContext
             entity.Property(e => e.RootDirectory).IsUnicode(false);
         });
 
+        modelBuilder.Entity<Caratula>(entity =>
+        {
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<Cerveza>(entity =>
         {
-            entity.ToTable("Cerveza");
-
             entity.Property(e => e.Ibu).HasColumnName("IBU");
             entity.Property(e => e.Imagen)
                 .IsUnicode(false)
@@ -74,24 +91,21 @@ public partial class MayiBeerCollectionContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Observaciones)
-                .HasMaxLength(200)
-                .IsUnicode(false);
+            entity.Property(e => e.Observaciones).IsUnicode(false);
 
-            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Cervezas)
+            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Cerveza)
                 .HasForeignKey(d => d.IdArchivo)
                 .HasConstraintName("FK_Cerveza_Archivo");
 
-            entity.HasOne(d => d.IdCiudadNavigation).WithMany(p => p.Cervezas)
+            entity.HasOne(d => d.IdCiudadNavigation).WithMany(p => p.Cerveza)
                 .HasForeignKey(d => d.IdCiudad)
                 .HasConstraintName("FK_Cerveza_Ciudad");
 
-            entity.HasOne(d => d.IdEstiloNavigation).WithMany(p => p.Cervezas)
+            entity.HasOne(d => d.IdEstiloNavigation).WithMany(p => p.Cerveza)
                 .HasForeignKey(d => d.IdEstilo)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Cerveza_Estilo");
 
-            entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.Cervezas)
+            entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.Cerveza)
                 .HasForeignKey(d => d.IdMarca)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Cerveza_Marca");
@@ -99,13 +113,11 @@ public partial class MayiBeerCollectionContext : DbContext
 
         modelBuilder.Entity<Ciudad>(entity =>
         {
-            entity.ToTable("Ciudad");
-
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.IdPaisNavigation).WithMany(p => p.Ciudads)
+            entity.HasOne(d => d.IdPaisNavigation).WithMany(p => p.Ciudad)
                 .HasForeignKey(d => d.IdPais)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Ciudad_Pais");
@@ -113,31 +125,61 @@ public partial class MayiBeerCollectionContext : DbContext
 
         modelBuilder.Entity<Estilo>(entity =>
         {
-            entity.ToTable("Estilo");
-
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Estilos)
+            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Estilo)
                 .HasForeignKey(d => d.IdArchivo)
                 .HasConstraintName("FK_Estilo_Archivo");
         });
 
+        modelBuilder.Entity<Expediente>(entity =>
+        {
+            entity.Property(e => e.Documento)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Expediente1)
+                .HasMaxLength(100)
+                .IsUnicode(false)
+                .HasColumnName("Expediente");
+            entity.Property(e => e.Fecha).HasColumnType("datetime");
+            entity.Property(e => e.FechaExpediente).HasColumnType("date");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Observaciones).IsUnicode(false);
+
+            entity.HasOne(d => d.IdActoNavigation).WithMany(p => p.Expediente)
+                .HasForeignKey(d => d.IdActo)
+                .HasConstraintName("FK_Expediente_Acto");
+
+            entity.HasOne(d => d.IdCaratulaNavigation).WithMany(p => p.Expediente)
+                .HasForeignKey(d => d.IdCaratula)
+                .HasConstraintName("FK_Expediente_Caratula");
+
+            entity.HasOne(d => d.IdSituacionRevistaNavigation).WithMany(p => p.Expediente)
+                .HasForeignKey(d => d.IdSituacionRevista)
+                .HasConstraintName("FK_Expediente_SituacionRevista");
+        });
+
+        modelBuilder.Entity<Log>(entity =>
+        {
+            entity.Property(e => e.TimeStamp).HasColumnType("datetime");
+        });
+
         modelBuilder.Entity<Marca>(entity =>
         {
-            entity.ToTable("Marca");
-
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Marcas)
+            entity.HasOne(d => d.IdArchivoNavigation).WithMany(p => p.Marca)
                 .HasForeignKey(d => d.IdArchivo)
                 .HasConstraintName("FK_Marca_Archivo");
         });
 
-        modelBuilder.Entity<Pai>(entity =>
+        modelBuilder.Entity<Pais>(entity =>
         {
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
@@ -150,17 +192,20 @@ public partial class MayiBeerCollectionContext : DbContext
 
         modelBuilder.Entity<Perfil>(entity =>
         {
-            entity.ToTable("Perfil");
-
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(50)
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<SituacionRevista>(entity =>
+        {
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<Usuario>(entity =>
         {
-            entity.ToTable("Usuario");
-
             entity.Property(e => e.Correo)
                 .HasMaxLength(150)
                 .IsUnicode(false);
@@ -174,7 +219,7 @@ public partial class MayiBeerCollectionContext : DbContext
                 .HasMaxLength(150)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.IdPerfilNavigation).WithMany(p => p.Usuarios)
+            entity.HasOne(d => d.IdPerfilNavigation).WithMany(p => p.Usuario)
                 .HasForeignKey(d => d.IdPerfil)
                 .HasConstraintName("FK_Usuario_Perfil");
         });

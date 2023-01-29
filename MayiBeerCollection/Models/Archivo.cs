@@ -9,11 +9,11 @@ public partial class Archivo
 
     public byte[]? Archivo1 { get; set; }
 
-    public virtual ICollection<Cerveza> Cervezas { get; } = new List<Cerveza>();
+    public virtual ICollection<Cerveza> Cerveza { get; } = new List<Cerveza>();
 
-    public virtual ICollection<Estilo> Estilos { get; } = new List<Estilo>();
+    public virtual ICollection<Estilo> Estilo { get; } = new List<Estilo>();
 
-    public virtual ICollection<Marca> Marcas { get; } = new List<Marca>();
+    public virtual ICollection<Marca> Marca { get; } = new List<Marca>();
 
-    public virtual ICollection<Pai> Pais { get; } = new List<Pai>();
+    public virtual ICollection<Pais> Pais { get; } = new List<Pais>();
 }

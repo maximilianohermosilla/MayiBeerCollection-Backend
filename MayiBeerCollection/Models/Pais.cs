@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace MayiBeerCollection.Models;
 
-public partial class Estilo
+public partial class Pais
 {
     public int Id { get; set; }
 
@@ -11,7 +11,7 @@ public partial class Estilo
 
     public int? IdArchivo { get; set; }
 
-    public virtual ICollection<Cerveza> Cerveza { get; } = new List<Cerveza>();
+    public virtual ICollection<Ciudad> Ciudad { get; } = new List<Ciudad>();
 
     public virtual Archivo? IdArchivoNavigation { get; set; }
 }

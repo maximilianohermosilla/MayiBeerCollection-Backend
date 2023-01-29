@@ -38,35 +38,35 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                List<Cerveza> lst = (from tbl in _contexto.Cervezas where tbl.Id > 0 select tbl).ToList();          
+                List<Cerveza> lst = (from tbl in _contexto.Cerveza where tbl.Id > 0 select tbl).ToList();          
 
                 List<CervezaDTO> cervezasDTO = _mapper.Map<List<CervezaDTO>>(lst);
 
                 foreach (var item in cervezasDTO)
                 {
-                    Estilo _estilo = (from h in _contexto.Estilos where h.Id == item.IdEstilo select h).FirstOrDefault();
+                    Estilo _estilo = (from h in _contexto.Estilo where h.Id == item.IdEstilo select h).FirstOrDefault();
                     if (_estilo != null)
                     {
                         item.NombreEstilo = _estilo.Nombre;
                     }
 
-                    Marca _marca = (from h in _contexto.Marcas where h.Id == item.IdMarca select h).FirstOrDefault();
+                    Marca _marca = (from h in _contexto.Marca where h.Id == item.IdMarca select h).FirstOrDefault();
                     if (_marca != null)
                     {
                         item.NombreMarca = _marca.Nombre;
                     }
 
-                    Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+                    Archivo _archivo = (from h in _contexto.Archivo where h.Id == item.IdArchivo select h).FirstOrDefault();
                     if (_archivo != null)
                     {
                         string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
                         item.Imagen = stringArchivo;
                     }
 
-                    Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == item.IdCiudad select h).FirstOrDefault();
+                    Ciudad _ciudad = (from h in _contexto.Ciudad where h.Id == item.IdCiudad select h).FirstOrDefault();
                     if (_ciudad != null)
                     {
-                        Pai _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
+                        Pais _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
                         item.IdPais = _pais.Id;
                         item.NombrePais = _pais.Nombre;
                         item.NombreCiudad = _ciudad.Nombre + " (" + _pais.Nombre + ")";
@@ -86,28 +86,28 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                List<Cerveza> lst = (from tbl in _contexto.Cervezas where tbl.Id > 0 select tbl).OrderBy(e => e.IdMarca).ToList();
+                List<Cerveza> lst = (from tbl in _contexto.Cerveza where tbl.Id > 0 select tbl).OrderBy(e => e.IdMarca).ToList();
 
                 List<CervezaDTO> cervezasDTO = _mapper.Map<List<CervezaDTO>>(lst);
 
                 foreach (var item in cervezasDTO)
                 {
-                    Estilo _estilo = (from h in _contexto.Estilos where h.Id == item.IdEstilo select h).FirstOrDefault();
+                    Estilo _estilo = (from h in _contexto.Estilo where h.Id == item.IdEstilo select h).FirstOrDefault();
                     if (_estilo != null)
                     {
                         item.NombreEstilo = _estilo.Nombre;
                     }
 
-                    Marca _marca = (from h in _contexto.Marcas where h.Id == item.IdMarca select h).FirstOrDefault();
+                    Marca _marca = (from h in _contexto.Marca where h.Id == item.IdMarca select h).FirstOrDefault();
                     if (_marca != null)
                     {
                         item.NombreMarca = _marca.Nombre;
                     }
 
-                    Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == item.IdCiudad select h).FirstOrDefault();
+                    Ciudad _ciudad = (from h in _contexto.Ciudad where h.Id == item.IdCiudad select h).FirstOrDefault();
                     if (_ciudad != null)
                     {
-                        Pai _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
+                        Pais _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
                         item.IdPais = _pais.Id;
                         item.NombrePais = _pais.Nombre;
                         item.NombreCiudad = _ciudad.Nombre + " (" + _pais.Nombre + ")";
@@ -127,8 +127,8 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                var lista = (from dt in _contexto.Cervezas
-                             join d in _contexto.Marcas on dt.IdMarca equals d.Id                             
+                var lista = (from dt in _contexto.Cerveza
+                             join d in _contexto.Marca on dt.IdMarca equals d.Id                             
                              select d).GroupBy(p => p.Nombre)
                    .Select(g => new { name = g.Key, value = g.Count() });
 
@@ -147,8 +147,8 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                var lista = (from dt in _contexto.Cervezas
-                             join d in _contexto.Estilos on dt.IdEstilo equals d.Id
+                var lista = (from dt in _contexto.Cerveza
+                             join d in _contexto.Estilo on dt.IdEstilo equals d.Id
                              select d).GroupBy(p => p.Nombre)
                    .Select(g => new { name = g.Key, value = g.Count() });
 
@@ -167,8 +167,8 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                var lista = (from dt in _contexto.Cervezas
-                             join d in _contexto.Ciudads on dt.IdCiudad equals d.Id
+                var lista = (from dt in _contexto.Cerveza
+                             join d in _contexto.Ciudad on dt.IdCiudad equals d.Id
                              select d).GroupBy(p => p.Nombre)
                    .Select(g => new { name = g.Key, value = g.Count() });
 
@@ -187,8 +187,8 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                var lista = (from C in _contexto.Cervezas
-                             join dc in _contexto.Ciudads on C.IdCiudad equals dc.Id
+                var lista = (from C in _contexto.Cerveza
+                             join dc in _contexto.Ciudad on C.IdCiudad equals dc.Id
                              join dp in _contexto.Pais on dc.IdPais equals dp.Id
                              select dp).GroupBy(p => p.Nombre)
                    .Select(g => new { name = g.Key, value = g.Count() });
@@ -209,18 +209,18 @@ namespace MayiBeerCollection.Controllers
             try
             {
                 List<ReporteDTO> lista = new List<ReporteDTO>();
-                var listaTotal = (from tbl in _contexto.Cervezas where tbl.Id > 0 select tbl.Id).ToList();
-                var listaMarcas = (from d in _contexto.Cervezas
+                var listaTotal = (from tbl in _contexto.Cerveza where tbl.Id > 0 select tbl.Id).ToList();
+                var listaMarcas = (from d in _contexto.Cerveza
                              select d).GroupBy(p => p.IdMarca)
                    .Select(g => new { name = g.Key, value = g.Count() });
-                var listaEstilos = (from d in _contexto.Cervezas
+                var listaEstilos = (from d in _contexto.Cerveza
                                    select d).GroupBy(p => p.IdEstilo)
                                 .Select(g => new { name = g.Key, value = g.Count() });
-                var listaCiudades = (from d in _contexto.Cervezas
+                var listaCiudades = (from d in _contexto.Cerveza
                                    select d).GroupBy(p => p.IdCiudad)
                 .Select(g => new { name = g.Key, value = g.Count() });
-                var listaPaises = (from dt in _contexto.Cervezas
-                                   join d in _contexto.Ciudads on dt.IdCiudad equals d.Id
+                var listaPaises = (from dt in _contexto.Cerveza
+                                   join d in _contexto.Ciudad on dt.IdCiudad equals d.Id
                                    select d).GroupBy(p => p.IdPais)
                 .Select(g => new { name = g.Key, value = g.Count() });
 
@@ -244,7 +244,7 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                Cerveza cl = (from tbl in _contexto.Cervezas where tbl.Id == CervezaId select tbl).FirstOrDefault();
+                Cerveza cl = (from tbl in _contexto.Cerveza where tbl.Id == CervezaId select tbl).FirstOrDefault();
 
                 if (cl == null)
                 {
@@ -253,19 +253,19 @@ namespace MayiBeerCollection.Controllers
 
                 CervezaDTO item = _mapper.Map<CervezaDTO>(cl);
 
-                Estilo _estilo = (from h in _contexto.Estilos where h.Id == item.IdEstilo select h).FirstOrDefault();
+                Estilo _estilo = (from h in _contexto.Estilo where h.Id == item.IdEstilo select h).FirstOrDefault();
                 if (_estilo != null)
                 {
                     item.NombreEstilo = _estilo.Nombre;
                 }
 
-                Marca _marca = (from h in _contexto.Marcas where h.Id == item.IdMarca select h).FirstOrDefault();
+                Marca _marca = (from h in _contexto.Marca where h.Id == item.IdMarca select h).FirstOrDefault();
                 if (_marca != null)
                 {
                     item.NombreMarca = _marca.Nombre;
                 }
 
-                Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+                Archivo _archivo = (from h in _contexto.Archivo where h.Id == item.IdArchivo select h).FirstOrDefault();
                 if (_archivo != null)
                 {
                     string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
@@ -273,10 +273,10 @@ namespace MayiBeerCollection.Controllers
                     //item.ImageFile = _archivo.Archivo1;
                 }
 
-                Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == item.IdCiudad select h).FirstOrDefault();
+                Ciudad _ciudad = (from h in _contexto.Ciudad where h.Id == item.IdCiudad select h).FirstOrDefault();
                 if (_ciudad != null)
                 {
-                    Pai _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
+                    Pais _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
                     item.IdPais = _pais.Id;
                     item.NombrePais = _pais.Nombre;
                     item.NombreCiudad = _ciudad.Nombre + " (" + _pais.Nombre + ")";
@@ -296,11 +296,11 @@ namespace MayiBeerCollection.Controllers
         {
             try
             {
-                List<Cerveza> lst = (from tbl in _contexto.Cervezas where
+                List<Cerveza> lst = (from tbl in _contexto.Cerveza where
                               (tbl.IdMarca == busqueda.IdMarca || busqueda.IdMarca == 0) &&
                               (tbl.IdEstilo == busqueda.IdEstilo || busqueda.IdEstilo == 0) &&
                               (tbl.IdCiudad == busqueda.IdCiudad || (busqueda.IdCiudad == 0 && busqueda.IdPais == 0) || 
-                              (busqueda.IdCiudad == 0 && busqueda.IdPais > 0 && (from tblCiudad in _contexto.Ciudads where tblCiudad.IdPais == busqueda.IdPais select tblCiudad.Id).Contains((int)tbl.IdCiudad))
+                              (busqueda.IdCiudad == 0 && busqueda.IdPais > 0 && (from tblCiudad in _contexto.Ciudad where tblCiudad.IdPais == busqueda.IdPais select tblCiudad.Id).Contains((int)tbl.IdCiudad))
                               ) 
                 select tbl).ToList();
 
@@ -309,33 +309,33 @@ namespace MayiBeerCollection.Controllers
                     return NotFound(busqueda);
                 }
 
-                List<CervezaDTO> cervezasDTO = _mapper.Map<List<CervezaDTO>>(lst);
 
+                List<CervezaDTO> cervezasDTO = _mapper.Map<List<CervezaDTO>>(lst);
                 foreach (var item in cervezasDTO)
                 {
-                    Estilo _estilo = (from h in _contexto.Estilos where h.Id == item.IdEstilo select h).FirstOrDefault();
+                    Estilo _estilo = (from h in _contexto.Estilo where h.Id == item.IdEstilo select h).FirstOrDefault();
                     if (_estilo != null)
                     {
                         item.NombreEstilo = _estilo.Nombre;
                     }
 
-                    Marca _marca = (from h in _contexto.Marcas where h.Id == item.IdMarca select h).FirstOrDefault();
+                    Marca _marca = (from h in _contexto.Marca where h.Id == item.IdMarca select h).FirstOrDefault();
                     if (_marca != null)
                     {
                         item.NombreMarca = _marca.Nombre;
                     }
 
-                    Archivo _archivo = (from h in _contexto.Archivos where h.Id == item.IdArchivo select h).FirstOrDefault();
+                    Archivo _archivo = (from h in _contexto.Archivo where h.Id == item.IdArchivo select h).FirstOrDefault();
                     if (_archivo != null)
                     {
                         string stringArchivo = Encoding.ASCII.GetString(_archivo.Archivo1);
                         item.Imagen = stringArchivo;
                     }
 
-                    Ciudad _ciudad = (from h in _contexto.Ciudads where h.Id == item.IdCiudad select h).FirstOrDefault();
+                    Ciudad _ciudad = (from h in _contexto.Ciudad where h.Id == item.IdCiudad select h).FirstOrDefault();
                     if (_ciudad != null)
                     {
-                        Pai _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
+                        Pais _pais = (from h in _contexto.Pais where h.Id == _ciudad.IdPais select h).FirstOrDefault();
                         item.IdPais = _pais.Id;
                         item.NombrePais = _pais.Nombre;
                         item.NombreCiudad = _ciudad.Nombre + " (" + _pais.Nombre + ")";
@@ -361,13 +361,13 @@ namespace MayiBeerCollection.Controllers
                 {
                     byte[] bytes = Encoding.ASCII.GetBytes(nuevo.Imagen);
                     Archivo newArch = new Archivo() { Archivo1 = bytes };
-                    _contexto.Archivos.Add(newArch);
+                    _contexto.Archivo.Add(newArch);
                     _contexto.SaveChanges();
                     _cerveza.Imagen = "";
                     _cerveza.IdArchivo = newArch.Id;
                 }
 
-                _contexto.Cervezas.Add(_cerveza);
+                _contexto.Cerveza.Add(_cerveza);
                 _contexto.SaveChanges();
 
                 nuevo.Id = _cerveza.Id;
@@ -397,7 +397,7 @@ namespace MayiBeerCollection.Controllers
             string oldObservaciones = "";
             try
             {
-                Cerveza _cerveza = (from h in _contexto.Cervezas where h.Id == actualiza.Id select h).FirstOrDefault();
+                Cerveza _cerveza = (from h in _contexto.Cerveza where h.Id == actualiza.Id select h).FirstOrDefault();
 
                 if (_cerveza == null)
                 {
@@ -407,19 +407,19 @@ namespace MayiBeerCollection.Controllers
                 if (actualiza.Imagen != null)
                 {
                     byte[] bytes = Encoding.ASCII.GetBytes(actualiza.Imagen);
-                    Archivo arch = (from a in _contexto.Archivos where a.Id == _cerveza.IdArchivo select a).FirstOrDefault();
+                    Archivo arch = (from a in _contexto.Archivo where a.Id == _cerveza.IdArchivo select a).FirstOrDefault();
 
                     if(arch == null)
                     {
                         Archivo newArch = new Archivo() { Archivo1 = bytes };
-                        _contexto.Archivos.Add(newArch);
+                        _contexto.Archivo.Add(newArch);
                         _contexto.SaveChanges();
                         _cerveza.IdArchivo = newArch.Id;
                     }
                     else
                     {
                         arch.Archivo1 = bytes;
-                        _contexto.Archivos.Update(arch);
+                        _contexto.Archivo.Update(arch);
                         _contexto.SaveChanges();
                     }
                 }
@@ -440,7 +440,7 @@ namespace MayiBeerCollection.Controllers
                 _cerveza.IdEstilo = actualiza.IdEstilo;
                 _cerveza.IdMarca = actualiza.IdMarca;
 
-                _contexto.Cervezas.Update(_cerveza);
+                _contexto.Cerveza.Update(_cerveza);
                 _contexto.SaveChanges();
                 _logger.LogWarning("Se actualizó la cerveza: " + actualiza.Id + ". Datos anteriores: " + oldName + ", IdMarca=" + oldMarca + ", IdEstilo=" + oldEstilo
                 + ", IdCiudad=" + oldCiudad + ", Ibu=" + oldIbu + " ,Alcohol=" + oldIbu + "%, Contenido=" + oldContenido + "ml/cc, Observaciones=" + oldObservaciones);
@@ -456,7 +456,7 @@ namespace MayiBeerCollection.Controllers
         [Authorize(Roles = "Administrador")]
         public ActionResult eliminar(int CervezaId)
         {
-            Cerveza _cerveza = (from h in _contexto.Cervezas where h.Id == CervezaId select h).FirstOrDefault();
+            Cerveza _cerveza = (from h in _contexto.Cerveza where h.Id == CervezaId select h).FirstOrDefault();
             try
             {
 
@@ -465,15 +465,15 @@ namespace MayiBeerCollection.Controllers
                     return NotFound(CervezaId);
                 }
 
-                Archivo arch = (from a in _contexto.Archivos where a.Id == _cerveza.IdArchivo select a).FirstOrDefault();
+                Archivo arch = (from a in _contexto.Archivo where a.Id == _cerveza.IdArchivo select a).FirstOrDefault();
 
                 if (arch != null)
                 {
-                    _contexto.Archivos.Remove(arch);
+                    _contexto.Archivo.Remove(arch);
                     _contexto.SaveChanges();
                 }
 
-                _contexto.Cervezas.Remove(_cerveza);
+                _contexto.Cerveza.Remove(_cerveza);
                 _contexto.SaveChanges();
                 _logger.LogWarning("Se eliminó la cerveza: " + CervezaId + ", " + _cerveza.Nombre);
                 return Accepted(CervezaId);
