@@ -11,6 +11,7 @@ using static System.Net.Mime.MediaTypeNames;
 using System.Text;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 #nullable disable
 namespace MayiBeerCollection.Controllers
@@ -113,6 +114,123 @@ namespace MayiBeerCollection.Controllers
                     }
                 }
                 return Accepted(cervezasDTO);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpGet("listarMarcas/")]
+        public ActionResult<IEnumerable<ReporteDTO>> CervezasMarcas()
+        {
+            try
+            {
+                var lista = (from dt in _contexto.Cervezas
+                             join d in _contexto.Marcas on dt.IdMarca equals d.Id                             
+                             select d).GroupBy(p => p.Nombre)
+                   .Select(g => new { name = g.Key, value = g.Count() });
+
+
+                return Accepted(lista);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpGet("listarEstilos/")]
+        public ActionResult<IEnumerable<ReporteDTO>> CervezasEstilos()
+        {
+            try
+            {
+                var lista = (from dt in _contexto.Cervezas
+                             join d in _contexto.Estilos on dt.IdEstilo equals d.Id
+                             select d).GroupBy(p => p.Nombre)
+                   .Select(g => new { name = g.Key, value = g.Count() });
+
+
+                return Accepted(lista);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpGet("listarCiudades/")]
+        public ActionResult<IEnumerable<ReporteDTO>> CervezasCiudades()
+        {
+            try
+            {
+                var lista = (from dt in _contexto.Cervezas
+                             join d in _contexto.Ciudads on dt.IdCiudad equals d.Id
+                             select d).GroupBy(p => p.Nombre)
+                   .Select(g => new { name = g.Key, value = g.Count() });
+
+
+                return Accepted(lista);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpGet("listarPaises/")]
+        public ActionResult<IEnumerable<ReporteDTO>> CervezasPaises()
+        {
+            try
+            {
+                var lista = (from C in _contexto.Cervezas
+                             join dc in _contexto.Ciudads on C.IdCiudad equals dc.Id
+                             join dp in _contexto.Pais on dc.IdPais equals dp.Id
+                             select dp).GroupBy(p => p.Nombre)
+                   .Select(g => new { name = g.Key, value = g.Count() });
+
+
+                return Accepted(lista);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpGet("listarCantidades/")]
+        public ActionResult<IEnumerable<ReporteDTO>> CervezasCantidades()
+        {
+            try
+            {
+                List<ReporteDTO> lista = new List<ReporteDTO>();
+                var listaTotal = (from tbl in _contexto.Cervezas where tbl.Id > 0 select tbl.Id).ToList();
+                var listaMarcas = (from d in _contexto.Cervezas
+                             select d).GroupBy(p => p.IdMarca)
+                   .Select(g => new { name = g.Key, value = g.Count() });
+                var listaEstilos = (from d in _contexto.Cervezas
+                                   select d).GroupBy(p => p.IdEstilo)
+                                .Select(g => new { name = g.Key, value = g.Count() });
+                var listaCiudades = (from d in _contexto.Cervezas
+                                   select d).GroupBy(p => p.IdCiudad)
+                .Select(g => new { name = g.Key, value = g.Count() });
+                var listaPaises = (from dt in _contexto.Cervezas
+                                   join d in _contexto.Ciudads on dt.IdCiudad equals d.Id
+                                   select d).GroupBy(p => p.IdPais)
+                .Select(g => new { name = g.Key, value = g.Count() });
+
+                lista.Add(new ReporteDTO() { name= "Cervezas", value = listaTotal.Count() });
+                lista.Add(new ReporteDTO() { name= "Marcas", value= listaMarcas.Count() });
+                lista.Add(new ReporteDTO() { name= "Estilos", value= listaEstilos.Count() });
+                lista.Add(new ReporteDTO() { name= "Paises", value= listaPaises.Count() });
+                lista.Add(new ReporteDTO() { name= "Ciudades", value= listaCiudades.Count() });
+
+                return Accepted(lista);
             }
             catch (Exception ex)
             {
